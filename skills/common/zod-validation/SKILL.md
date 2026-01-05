@@ -1,267 +1,110 @@
-# Zod Validation Skill
+# Zod Validation
 
-> TypeScript 스키마 선언 및 유효성 검증 가이드
+> 스키마 검증 - 핵심 패턴만
 
-## Overview
-
-Zod는 TypeScript 우선 스키마 선언 및 검증 라이브러리로, 런타임 타입 안전성과 자동 타입 추론을 제공합니다.
-
-## Activation
-
-다음 상황에서 이 스킬이 활성화됩니다:
-
-- Zod, 스키마, 유효성 검증 언급
-- 폼 검증 구현
-- API 응답/요청 타입 정의
-- DTO 변환 관련
-
-## Core Patterns
-
-### 1. API Schema with DTO
+## 기본 사용
 
 ```typescript
-// entities/user/model/schema.ts
 import { z } from 'zod';
 
-// API 응답 스키마 (snake_case)
-export const userResponseSchema = z.object({
-  id: z.string().uuid(),
-  user_name: z.string(),
-  email_address: z.string().email(),
-  created_at: z.string().datetime(),
+const userSchema = z.object({
+  name: z.string().min(1, '이름을 입력하세요'),
+  email: z.string().email('올바른 이메일 형식이 아닙니다'),
+  age: z.number().optional(),
 });
 
-// 도메인 스키마 (camelCase)
-export const userSchema = userResponseSchema.transform((data) => ({
-  id: data.id,
-  userName: data.user_name,
-  emailAddress: data.email_address,
-  createdAt: new Date(data.created_at),
-}));
-
-// 타입 추론
-export type UserResponse = z.input<typeof userSchema>;
-export type User = z.output<typeof userSchema>;
+type User = z.infer<typeof userSchema>;
 ```
 
-### 2. React Hook Form Integration
+## 폼 검증 (React Hook Form)
 
 ```typescript
-// features/auth/model/schema.ts
-import { z } from 'zod';
-
-export const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, '이메일을 입력해주세요')
-    .email('올바른 이메일 형식이 아닙니다'),
-  password: z
-    .string()
-    .min(1, '비밀번호를 입력해주세요')
-    .min(8, '비밀번호는 8자 이상이어야 합니다'),
-});
-
-export type LoginFormData = z.infer<typeof loginSchema>;
-```
-
-```typescript
-// features/auth/ui/login-form.tsx
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 
-export const LoginForm = () => {
-  const form = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+const schema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
+type FormData = z.infer<typeof schema>;
+
+function LoginForm() {
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+    resolver: zodResolver(schema),
   });
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
-      {/* ... */}
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register('email')} />
+      {errors.email && <span>{errors.email.message}</span>}
     </form>
   );
-};
+}
 ```
 
-### 3. Conditional Validation (Discriminated Union)
+## API 응답 검증
 
 ```typescript
-export const paymentSchema = z.discriminatedUnion('method', [
-  z.object({
-    method: z.literal('card'),
-    cardNumber: z.string().length(16),
-    cvv: z.string().length(3),
-    expiryDate: z.string(),
-  }),
-  z.object({
-    method: z.literal('bank'),
-    accountNumber: z.string(),
-    bankCode: z.string(),
-  }),
-  z.object({
-    method: z.literal('virtual'),
-    // 가상계좌는 추가 필드 불필요
-  }),
+const apiResponseSchema = z.object({
+  id: z.string(),
+  created_at: z.string(),
+});
+
+// safeParse: 예외 대신 결과 객체 반환
+const result = apiResponseSchema.safeParse(response);
+
+if (!result.success) {
+  console.error('Invalid response:', result.error.flatten());
+  return null;
+}
+
+return result.data;
+```
+
+## 자주 쓰는 패턴
+
+### 비밀번호 확인
+
+```typescript
+const signupSchema = z
+  .object({
+    password: z.string().min(8),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: '비밀번호가 일치하지 않습니다',
+    path: ['confirmPassword'],
+  });
+```
+
+### 조건부 필드
+
+```typescript
+const schema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('email'), email: z.string().email() }),
+  z.object({ type: z.literal('phone'), phone: z.string() }),
 ]);
 ```
 
-### 4. Array and Nested Object
+### 부분 스키마
 
 ```typescript
-export const orderSchema = z.object({
-  orderId: z.string(),
-  items: z.array(z.object({
-    productId: z.string(),
-    quantity: z.number().int().positive(),
-    price: z.number().nonnegative(),
-  })).min(1, '최소 1개 이상의 상품이 필요합니다'),
-  shipping: z.object({
-    address: z.string().min(1),
-    zipCode: z.string().regex(/^\d{5}$/),
-  }),
-});
-```
-
-### 5. Partial Schema (Pick/Omit)
-
-```typescript
-// 전체 스키마
 const userSchema = z.object({
   id: z.string(),
   name: z.string(),
-  email: z.string().email(),
-  password: z.string(),
-  createdAt: z.date(),
+  email: z.string(),
 });
 
-// 부분 스키마
-const createUserSchema = userSchema.omit({ id: true, createdAt: true });
+// 생성용 (id 제외)
+const createUserSchema = userSchema.omit({ id: true });
+
+// 수정용 (모두 optional + id 필수)
 const updateUserSchema = userSchema.partial().required({ id: true });
-const userProfileSchema = userSchema.pick({ name: true, email: true });
 ```
 
-### 6. Custom Validation (Refinement)
+## 그 외는 필요할 때 찾아보세요
 
-```typescript
-const signupSchema = z.object({
-  password: z.string().min(8),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: '비밀번호가 일치하지 않습니다',
-  path: ['confirmPassword'],
-});
+Zod 문서가 잘 되어 있습니다. transform, coerce, preprocess 등은 특수한 경우에만 필요합니다.
 
-// 비동기 검증
-const usernameSchema = z.string().refine(
-  async (username) => {
-    const exists = await checkUsernameExists(username);
-    return !exists;
-  },
-  { message: '이미 사용 중인 사용자명입니다' }
-);
-```
-
-## FSD Integration
-
-```
-entities/user/
-├── model/
-│   ├── schema.ts      # Zod 스키마 정의
-│   └── types.ts       # 추론된 타입 export
-└── index.ts
-
-features/create-user/
-├── model/
-│   └── schema.ts      # 폼 검증 스키마
-├── ui/
-│   └── create-form.tsx
-└── index.ts
-```
-
-## Error Handling
-
-### Parse (Throwing)
-
-```typescript
-try {
-  const user = userSchema.parse(data);
-} catch (error) {
-  if (error instanceof z.ZodError) {
-    console.error(error.errors);
-  }
-}
-```
-
-### SafeParse (Non-throwing)
-
-```typescript
-const result = userSchema.safeParse(data);
-
-if (result.success) {
-  const user = result.data;
-} else {
-  const errors = result.error.flatten();
-  // { formErrors: [], fieldErrors: { email: ['...'] } }
-}
-```
-
-### Error Formatting
-
-```typescript
-const formatZodErrors = (error: z.ZodError) => {
-  return error.errors.reduce((acc, err) => {
-    const path = err.path.join('.');
-    acc[path] = err.message;
-    return acc;
-  }, {} as Record<string, string>);
-};
-```
-
-## Common Patterns
-
-### Optional vs Nullable
-
-```typescript
-// optional: undefined 허용 (필드 생략 가능)
-z.string().optional(); // string | undefined
-
-// nullable: null 허용
-z.string().nullable(); // string | null
-
-// 둘 다 허용
-z.string().nullish(); // string | null | undefined
-```
-
-### Default Values
-
-```typescript
-const configSchema = z.object({
-  theme: z.enum(['light', 'dark']).default('light'),
-  pageSize: z.number().default(20),
-  notifications: z.boolean().default(true),
-});
-```
-
-### Coercion
-
-```typescript
-// 문자열을 숫자로 변환
-z.coerce.number(); // "123" → 123
-
-// 문자열을 날짜로 변환
-z.coerce.date(); // "2024-01-01" → Date
-
-// 불리언 변환
-z.coerce.boolean(); // "true" → true
-```
-
-## Best Practices
-
-1. **DTO와 도메인 분리**: API 응답과 앱 내부 타입을 분리
-2. **구체적 에러 메시지**: 사용자 친화적인 메시지 작성
-3. **타입 추론 활용**: 스키마에서 타입 추론, 중복 정의 방지
-4. **스키마 조합**: extend, merge로 재사용성 높이기
-5. **safeParse 선호**: 예외 대신 결과 객체로 처리
+**핵심**: 타입과 검증을 한 곳에서 관리하고, `z.infer`로 타입 추론하세요.

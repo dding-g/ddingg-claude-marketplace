@@ -1,116 +1,83 @@
 # Frontend Claude Settings
 
-프론트엔드 개발 환경을 위한 Claude 스킬 및 에이전트 모음입니다.
+프론트엔드 개발을 위한 Claude 스킬 및 에이전트
 
 ## 📁 구조
 
 ```
-.
-├── skills/
-│   ├── common/                    # 공통 스킬
-│   │   ├── fsd-architecture/      # FSD 아키텍처 가이드
-│   │   ├── react-query-patterns/  # React Query 패턴
-│   │   ├── zod-validation/        # Zod 유효성 검증
-│   │   ├── code-quality/          # 코드 품질 가이드
-│   │   └── code-smell/            # 코드 스멜 탐지
-│   │
-│   ├── nextjs-app-router/         # Next.js App Router 스킬
-│   │   ├── SKILL.md
-│   │   └── patterns/
-│   │       ├── data-fetching.md
-│   │       └── server-actions.md
-│   │
-│   ├── vite-csr/                  # Vite CSR 프로젝트 스킬
-│   │   ├── SKILL.md
-│   │   └── patterns/
-│   │       ├── routing.md
-│   │       └── state-management.md
-│   │
-│   └── react-native/              # React Native 스킬
-│       ├── SKILL.md
-│       └── patterns/
-│           ├── navigation.md
-│           ├── performance.md
-│           └── native-features.md
+skills/
+├── common/                       # 공통 스킬
+│   ├── writing-good-code/        # 좋은 코드 작성법
+│   ├── typescript-patterns/      # TypeScript 실용 패턴
+│   ├── react-patterns/           # Modern React 패턴
+│   ├── fsd-architecture/         # FSD 아키텍처 (실용적 가이드)
+│   ├── react-query-patterns/     # React Query (심플하게)
+│   └── zod-validation/           # Zod 검증 (핵심만)
 │
-└── agents/                        # PR 에이전트
-    ├── pr-review.md               # PR 리뷰 에이전트
-    ├── pr-summary.md              # PR 요약 에이전트
-    ├── pr-test-check.md           # 테스트 검증 에이전트
-    ├── pr-security.md             # 보안 검증 에이전트
-    └── pr-architecture.md         # 아키텍처 검증 에이전트
+├── nextjs-app-router/            # Next.js 15+ App Router
+├── vite-csr/                     # Vite CSR/SPA
+└── react-native/                 # React Native/Expo
+
+agents/                           # PR 에이전트
+├── pr-review.md
+├── pr-summary.md
+├── pr-test-check.md
+├── pr-security.md
+└── pr-architecture.md
 ```
 
-## 🎯 지원 환경
+## 철학
 
-| 환경 | 설명 |
+- **심플하게 시작, 필요할 때 확장**
+- 교과서적 규칙보다 **실용적 판단**
+- 과도한 추상화보다 **명확한 코드**
+- 트렌드 추종보다 **문제 해결**
+
+## 스킬 개요
+
+### Common Skills
+
+| 스킬 | 핵심 내용 |
+|------|----------|
+| **writing-good-code** | 이름 짓기, 함수 분리, 조건문, Early Return |
+| **typescript-patterns** | 타입 추론, 유틸리티 타입, 제네릭, 타입 좁히기 |
+| **react-patterns** | 상태 관리 판단, Suspense, React 19 패턴 |
+| **fsd-architecture** | 언제 FSD를 쓸까? 실용적 적용법 |
+| **react-query-patterns** | 기본 Query/Mutation, 필요시에만 확장 |
+| **zod-validation** | 폼 검증, API 응답 검증, 핵심 패턴 3가지 |
+
+### Platform Skills
+
+| 스킬 | 대상 |
 |------|------|
-| **Next.js App Router** | Next.js 15+ App Router 기반 SSR/SSG 프로젝트 |
-| **Vite CSR** | Vite 기반 React SPA/CSR 프로젝트 |
-| **React Native** | Expo Router 기반 모바일 앱 프로젝트 |
+| **nextjs-app-router** | Server Components, Server Actions, 데이터 페칭 |
+| **vite-csr** | React Router, Zustand, 코드 스플리팅 |
+| **react-native** | Expo Router, 네이티브 기능, 성능 최적화 |
 
-## 📚 공통 스킬
+## PR 에이전트
 
-### FSD Architecture
-Feature-Sliced Design 아키텍처 구현 가이드
-
-### React Query Patterns
-TanStack Query를 활용한 서버 상태 관리 패턴
-
-### Zod Validation
-TypeScript 스키마 선언 및 유효성 검증
-
-### Code Quality
-Toss Frontend Fundamentals 기반 코드 품질 가이드
-
-### Code Smell
-코드 스멜 탐지 및 리팩토링 가이드
-
-## 🤖 PR 에이전트
-
-| 에이전트 | 설명 | 커맨드 |
+| 에이전트 | 역할 | 커맨드 |
 |---------|------|--------|
-| **PR Review** | 코드 품질, 보안, 성능 리뷰 | `/review` |
-| **PR Summary** | 변경사항 요약 생성 | `/summary` |
-| **Test Check** | 테스트 커버리지 검증 | `/test-check` |
-| **Security** | 보안 취약점 분석 | `/security` |
+| **PR Review** | 코드 품질, 보안, 성능 | `/review` |
+| **PR Summary** | 변경사항 요약 | `/summary` |
+| **Test Check** | 테스트 커버리지 | `/test-check` |
+| **Security** | 보안 취약점 | `/security` |
 | **Architecture** | FSD 아키텍처 검증 | `/arch` |
 
-## 🚀 사용법
+## 사용법
 
-### 스킬 활성화
+스킬은 관련 키워드 감지 시 자동 활성화됩니다.
 
-스킬은 관련 키워드가 감지되면 자동으로 활성화됩니다:
-
-- "FSD", "Feature-Sliced Design" → FSD Architecture 스킬
-- "React Query", "useQuery" → React Query Patterns 스킬
-- "Zod", "스키마", "검증" → Zod Validation 스킬
-- "App Router", "Server Actions" → Next.js App Router 스킬
-- "React Native", "Expo" → React Native 스킬
-
-### PR 에이전트 실행
-
-PR 코멘트에서 커맨드를 입력하여 에이전트를 실행합니다:
-
+PR 에이전트는 코멘트에서 커맨드로 실행:
 ```
-/review      # 전체 코드 리뷰
-/summary     # 변경사항 요약
-/security    # 보안 검사
-/arch        # 아키텍처 검증
-/test-check  # 테스트 검증
+/review
+/summary
+/security
 ```
 
-## 📝 컨벤션
+## 컨벤션
 
-- **파일명**: kebab-case 사용 (`user-profile.tsx`)
-- **컴포넌트명**: PascalCase 사용 (`UserProfile`)
-- **훅명**: camelCase + use 접두사 (`useUserProfile`)
-- **상수명**: SCREAMING_SNAKE_CASE (`MAX_RETRY_COUNT`)
-
-## 🔗 참고 자료
-
-- [Feature-Sliced Design](https://feature-sliced.design/)
-- [TanStack Query](https://tanstack.com/query)
-- [Zod Documentation](https://zod.dev/)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Expo Documentation](https://docs.expo.dev/)
+- 파일명: `kebab-case`
+- 컴포넌트: `PascalCase`
+- 훅: `useCamelCase`
+- 상수: `SCREAMING_SNAKE_CASE`

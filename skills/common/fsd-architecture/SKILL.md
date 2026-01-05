@@ -1,174 +1,89 @@
-# FSD Architecture Skill
+# FSD Architecture
 
-> Feature-Sliced Design 아키텍처 설계 및 구현 가이드
+> Feature-Sliced Design - 언제, 왜 사용하는가
 
-## Overview
+## 핵심 개념
 
-FSD는 프론트엔드 프로젝트를 위한 현대적인 아키텍처 방법론으로, 코드를 표준화된 레이어와 슬라이스로 구성합니다.
-
-## Activation
-
-다음 상황에서 이 스킬이 활성화됩니다:
-
-- FSD, Feature-Sliced Design 언급
-- 아키텍처 구조 관련 질문
-- 폴더 구조 설계 요청
-- 레이어/슬라이스 생성 요청
-
-## Capabilities
-
-1. **구조 생성**: FSD 폴더 레이아웃 생성
-2. **의존성 검증**: 레이어 간 의존성 규칙 검증
-3. **슬라이스 관리**: 보일러플레이트 코드 생성
-4. **베스트 프랙티스**: FSD 원칙 적용
-
-## Layer Hierarchy
+FSD는 **도메인 중심**으로 코드를 구성하는 방법론입니다.
 
 ```
-app/        → 앱 초기화, 프로바이더, 라우팅
-pages/      → 전체 페이지, 라우트 컴포넌트
-widgets/    → 독립적인 UI 블록 조합
-features/   → 사용자 시나리오, 비즈니스 로직
-entities/   → 비즈니스 엔티티 (User, Product 등)
-shared/     → 재사용 유틸리티, UI Kit
+app/        # 앱 설정 (providers, router)
+pages/      # 라우트 진입점
+widgets/    # 페이지 조합 블록
+features/   # 사용자 액션 (로그인, 좋아요, 댓글 작성)
+entities/   # 도메인 모델 (User, Product, Order)
+shared/     # 공용 유틸, UI 컴포넌트
 ```
 
-## Dependency Rules
+**의존성 규칙**: 위에서 아래로만 import 가능
+
+## 언제 FSD를 사용할까?
+
+### 적합한 경우
+- 3명 이상 협업하는 중규모 이상 프로젝트
+- 명확한 도메인 경계가 있는 서비스
+- 장기 유지보수가 필요한 프로젝트
+
+### 부적합한 경우
+- MVP, 프로토타입, 1인 개발
+- 도메인이 모호한 유틸리티 앱
+- 빠른 실험이 필요한 초기 스타트업
+
+**FSD가 부담스럽다면 단순화하세요:**
 
 ```
-app     → pages, widgets, features, entities, shared
-pages   → widgets, features, entities, shared
-widgets → features, entities, shared
-features → entities, shared
-entities → shared
-shared   → (외부 라이브러리만)
+src/
+├── components/    # 공통 UI
+├── features/      # 기능 단위 (폴더 하나에 관련 코드 모두)
+├── hooks/         # 공통 훅
+├── lib/           # 유틸리티
+└── pages/         # 라우트
 ```
 
-**핵심 원칙**: 상위 레이어는 하위 레이어만 import 가능 (단방향)
+## 실용적 적용
 
-## Slice Structure
-
-각 슬라이스는 다음 세그먼트를 포함할 수 있습니다:
+### 1. 슬라이스 = 관련 코드를 한 곳에
 
 ```
 features/auth/
-├── ui/           # React 컴포넌트
-├── model/        # 상태, 스토어, 타입
-├── api/          # API 호출, React Query
-├── lib/          # 유틸리티 함수
-├── config/       # 상수, 설정
-└── index.ts      # Public API
+├── login-form.tsx       # 컴포넌트
+├── use-login.ts         # 훅
+├── schema.ts            # 유효성 검증
+├── types.ts             # 타입
+└── index.ts             # Public API
 ```
 
-## Public API Pattern
+폴더 구조보다 **관련 코드가 함께 있는 것**이 중요합니다.
 
-모든 import는 반드시 index.ts를 통해야 합니다:
+### 2. index.ts는 선택사항
 
 ```typescript
-// ✅ Good - Public API 사용
+// 팀이 동의하면 직접 import도 OK
+import { LoginForm } from '@/features/auth/login-form';
+
+// index.ts를 통한 import
 import { LoginForm } from '@/features/auth';
-import { useUser } from '@/entities/user';
-
-// ❌ Bad - 내부 구조 직접 접근
-import { LoginForm } from '@/features/auth/ui/login-form';
-import { useUser } from '@/entities/user/model/hooks';
 ```
 
-## Templates
+index.ts 강제보다 **일관성**이 중요합니다.
 
-### Entity Slice
+### 3. 레이어 위반? 상황에 따라 판단
 
 ```typescript
-// entities/user/model/types.ts
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-}
+// "규칙상" features끼리 import 금지
+// 하지만 실용적으로 필요하다면?
 
-// entities/user/api/queries.ts
-export const userKeys = {
-  all: ['users'] as const,
-  detail: (id: string) => [...userKeys.all, id] as const,
-};
+// features/checkout/index.ts
+import { useCart } from '@/features/cart';  // 허용할 수도 있음
 
-export const userQueries = {
-  detail: (id: string) => queryOptions({
-    queryKey: userKeys.detail(id),
-    queryFn: () => api.get<User>(`/users/${id}`),
-  }),
-};
-
-// entities/user/index.ts
-export type { User } from './model/types';
-export { userKeys, userQueries } from './api/queries';
+// 대안: 공통 로직을 entities로 내리기
+import { useCartItems } from '@/entities/cart';
 ```
 
-### Feature Slice
+## 핵심 원칙 3가지
 
-```typescript
-// features/auth/ui/login-form.tsx
-export const LoginForm = () => {
-  const { mutate: login } = useLoginMutation();
-  // ...
-};
+1. **함께 변경되는 코드는 함께 둔다**
+2. **의존 방향을 일관되게 유지한다** (가능하면 단방향)
+3. **팀이 이해하고 따를 수 있어야 한다**
 
-// features/auth/api/mutations.ts
-export const useLoginMutation = () => {
-  return useMutation({
-    mutationFn: (credentials: LoginCredentials) =>
-      api.post('/auth/login', credentials),
-  });
-};
-
-// features/auth/index.ts
-export { LoginForm } from './ui/login-form';
-export { useLoginMutation } from './api/mutations';
-```
-
-## Naming Conventions
-
-| 대상 | 컨벤션 | 예시 |
-|------|--------|------|
-| Layers | lowercase | `features`, `entities` |
-| Slices | kebab-case | `user-profile`, `shopping-cart` |
-| Components | PascalCase | `LoginForm.tsx` |
-| Hooks | camelCase | `useAuth.ts` |
-| Utils | kebab-case | `format-date.ts` |
-
-## Troubleshooting
-
-### 순환 참조 해결
-
-```typescript
-// ❌ 순환 참조 발생
-// features/auth → entities/user → features/auth
-
-// ✅ 해결: shared로 공통 타입 이동
-// shared/types/user.ts
-export interface BaseUser { ... }
-```
-
-### tsconfig paths 설정
-
-```json
-{
-  "compilerOptions": {
-    "paths": {
-      "@/*": ["./src/*"],
-      "@/shared/*": ["./src/shared/*"],
-      "@/entities/*": ["./src/entities/*"],
-      "@/features/*": ["./src/features/*"],
-      "@/widgets/*": ["./src/widgets/*"],
-      "@/pages/*": ["./src/pages/*"]
-    }
-  }
-}
-```
-
-## Best Practices
-
-1. **슬라이스 독립성**: 같은 레이어의 슬라이스끼리 import 금지
-2. **Public API 강제**: 반드시 index.ts를 통한 export
-3. **세그먼트 분리**: ui, model, api, lib 명확히 구분
-4. **네이밍 일관성**: kebab-case 슬라이스, PascalCase 컴포넌트
+아키텍처는 도구입니다. 팀에 맞게 조정하세요.

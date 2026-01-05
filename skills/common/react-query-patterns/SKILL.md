@@ -1,239 +1,167 @@
-# React Query Patterns Skill
+# React Query Patterns
 
-> TanStack Query 패턴 및 베스트 프랙티스 가이드
+> 서버 상태 관리 - 심플하게 시작하기
 
-## Overview
+## 기본 패턴
 
-React Query(TanStack Query)를 사용한 서버 상태 관리의 표준 패턴을 제공합니다.
-
-## Activation
-
-다음 상황에서 이 스킬이 활성화됩니다:
-
-- React Query, TanStack Query 언급
-- 데이터 페칭 관련 질문
-- useQuery, useMutation 사용
-- 캐시 관리, 낙관적 업데이트 관련
-
-## Core Patterns
-
-### 1. Query Key Factory
+### Query
 
 ```typescript
-// entities/user/api/keys.ts
-export const userKeys = {
-  all: ['users'] as const,
-  lists: () => [...userKeys.all, 'list'] as const,
-  list: (filters: UserFilters) => [...userKeys.lists(), filters] as const,
-  details: () => [...userKeys.all, 'detail'] as const,
-  detail: (id: string) => [...userKeys.details(), id] as const,
-};
+// 가장 기본적인 형태로 시작
+const { data, isLoading, error } = useQuery({
+  queryKey: ['user', userId],
+  queryFn: () => api.get(`/users/${userId}`),
+});
 ```
 
-### 2. Query Options Factory
+### Mutation
 
 ```typescript
-// entities/user/api/queries.ts
-import { queryOptions } from '@tanstack/react-query';
-
-export const userQueries = {
-  list: (filters: UserFilters) => queryOptions({
-    queryKey: userKeys.list(filters),
-    queryFn: () => api.get<User[]>('/users', { params: filters }),
-    staleTime: 1000 * 60 * 5, // 5분
-  }),
-
-  detail: (id: string) => queryOptions({
-    queryKey: userKeys.detail(id),
-    queryFn: () => api.get<User>(`/users/${id}`),
-    enabled: !!id,
-  }),
-};
-```
-
-### 3. Suspense Query Hook
-
-```typescript
-// entities/user/api/hooks.ts
-import { useSuspenseQuery } from '@tanstack/react-query';
-
-export const useUser = (id: string) => {
-  return useSuspenseQuery(userQueries.detail(id));
-};
-
-export const useUsers = (filters: UserFilters) => {
-  return useSuspenseQuery(userQueries.list(filters));
-};
-```
-
-### 4. Mutation with Optimistic Update
-
-```typescript
-// features/user/api/mutations.ts
-export const useUpdateUserMutation = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data: UpdateUserDto) =>
-      api.patch<User>(`/users/${data.id}`, data),
-
-    onMutate: async (newData) => {
-      await queryClient.cancelQueries({
-        queryKey: userKeys.detail(newData.id)
-      });
-
-      const previous = queryClient.getQueryData(
-        userKeys.detail(newData.id)
-      );
-
-      queryClient.setQueryData(
-        userKeys.detail(newData.id),
-        (old: User) => ({ ...old, ...newData })
-      );
-
-      return { previous };
-    },
-
-    onError: (err, newData, context) => {
-      queryClient.setQueryData(
-        userKeys.detail(newData.id),
-        context?.previous
-      );
-    },
-
-    onSettled: (data, err, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: userKeys.detail(variables.id)
-      });
-    },
-  });
-};
-```
-
-## FSD Integration
-
-```
-entities/user/
-├── api/
-│   ├── keys.ts       # Query Key Factory
-│   ├── queries.ts    # queryOptions Factory
-│   └── hooks.ts      # useSuspenseQuery Hooks
-├── model/
-│   └── types.ts      # User 타입 정의
-└── index.ts
-
-features/update-user/
-├── api/
-│   └── mutations.ts  # useMutation Hooks
-├── ui/
-│   └── update-form.tsx
-└── index.ts
-```
-
-## QueryClient Setup
-
-```typescript
-// shared/api/query-client.ts
-import { QueryClient } from '@tanstack/react-query';
-
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60, // 1분
-      gcTime: 1000 * 60 * 5, // 5분
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-    mutations: {
-      retry: 0,
-    },
+const { mutate, isPending } = useMutation({
+  mutationFn: (data) => api.post('/users', data),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['users'] });
   },
 });
 ```
 
-## Advanced Patterns
+이것만으로 대부분의 케이스를 커버합니다.
 
-### Dependent Queries
+## 패턴 확장 (필요할 때만)
 
-```typescript
-const useUserPosts = (userId: string) => {
-  const { data: user } = useUser(userId);
+### queryOptions (TanStack Query v5+)
 
-  return useQuery({
-    ...postQueries.listByUser(user.id),
-    enabled: !!user,
-  });
-};
-```
-
-### Infinite Query
+여러 곳에서 같은 쿼리를 재사용할 때:
 
 ```typescript
-export const useInfiniteUsers = (filters: UserFilters) => {
-  return useInfiniteQuery({
-    queryKey: userKeys.list(filters),
-    queryFn: ({ pageParam = 0 }) =>
-      api.get<PaginatedUsers>('/users', {
-        params: { ...filters, page: pageParam },
-      }),
-    getNextPageParam: (lastPage) => lastPage.nextPage,
-    initialPageParam: 0,
-  });
-};
-```
-
-### Prefetching
-
-```typescript
-// 라우트 진입 전 prefetch
-const prefetchUser = async (id: string) => {
-  await queryClient.prefetchQuery(userQueries.detail(id));
+// entities/user/queries.ts
+export const userQueries = {
+  detail: (id: string) => queryOptions({
+    queryKey: ['user', id],
+    queryFn: () => api.get(`/users/${id}`),
+  }),
 };
 
-// 컴포넌트에서 hover prefetch
-const UserCard = ({ userId }: { userId: string }) => {
-  const prefetch = () => {
-    queryClient.prefetchQuery(userQueries.detail(userId));
-  };
+// 사용
+const { data } = useQuery(userQueries.detail(userId));
+const { data } = useSuspenseQuery(userQueries.detail(userId));
+await queryClient.prefetchQuery(userQueries.detail(userId));
+```
 
-  return (
-    <Link
-      to={`/users/${userId}`}
-      onMouseEnter={prefetch}
-    >
-      ...
-    </Link>
-  );
+### Query Key Factory
+
+캐시 무효화가 복잡해질 때만 도입:
+
+```typescript
+export const userKeys = {
+  all: ['users'] as const,
+  lists: () => [...userKeys.all, 'list'] as const,
+  detail: (id: string) => [...userKeys.all, id] as const,
 };
+
+// 전체 users 캐시 무효화
+queryClient.invalidateQueries({ queryKey: userKeys.all });
 ```
 
-## Best Practices
+### Optimistic Update
 
-1. **Query vs Mutation 분리**: GET은 queries, POST/PUT/DELETE는 mutations
-2. **계층적 캐시 무효화**: queryKey 계층 구조 활용
-3. **Suspense 패턴**: useSuspenseQuery로 로딩 상태 단순화
-4. **낙관적 업데이트**: UX 향상을 위한 즉각적 피드백
-5. **에러 바운더리**: Suspense + ErrorBoundary 조합
-
-## Troubleshooting
-
-### 캐시가 업데이트되지 않음
+UX가 중요한 인터랙션에서만:
 
 ```typescript
-// ❌ 잘못된 방법 - 새 참조 생성
-queryClient.setQueryData(key, { ...old, ...new });
-
-// ✅ 올바른 방법 - 함수로 업데이트
-queryClient.setQueryData(key, (old) => ({ ...old, ...new }));
+useMutation({
+  mutationFn: updateUser,
+  onMutate: async (newData) => {
+    await queryClient.cancelQueries({ queryKey: ['user', newData.id] });
+    const previous = queryClient.getQueryData(['user', newData.id]);
+    queryClient.setQueryData(['user', newData.id], newData);
+    return { previous };
+  },
+  onError: (err, newData, context) => {
+    queryClient.setQueryData(['user', newData.id], context?.previous);
+  },
+  onSettled: () => {
+    queryClient.invalidateQueries({ queryKey: ['user'] });
+  },
+});
 ```
 
-### 무한 리렌더링
+복잡합니다. 정말 필요할 때만 사용하세요.
+
+## 실용적 팁
+
+### staleTime 설정
 
 ```typescript
-// ❌ 매번 새 객체 생성
-useQuery({ queryKey: ['users', { page }] });
+// 자주 변하지 않는 데이터
+useQuery({
+  queryKey: ['config'],
+  queryFn: fetchConfig,
+  staleTime: Infinity,  // 수동 무효화 전까지 fresh
+});
 
-// ✅ useMemo로 안정화
-const filters = useMemo(() => ({ page }), [page]);
-useQuery({ queryKey: ['users', filters] });
+// 실시간성이 중요한 데이터
+useQuery({
+  queryKey: ['notifications'],
+  queryFn: fetchNotifications,
+  staleTime: 0,  // 항상 stale (기본값)
+  refetchInterval: 30000,  // 30초마다 폴링
+});
 ```
+
+### 에러 처리
+
+```typescript
+// 전역 에러 처리
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      throwOnError: true,  // ErrorBoundary로 전파
+    },
+  },
+});
+
+// 개별 쿼리에서 에러 처리
+const { data, error } = useQuery({
+  queryKey: ['user', id],
+  queryFn: fetchUser,
+  throwOnError: false,  // 컴포넌트에서 직접 처리
+});
+
+if (error) return <ErrorMessage error={error} />;
+```
+
+### Suspense와 함께
+
+```typescript
+// Suspense + ErrorBoundary 조합
+<ErrorBoundary fallback={<Error />}>
+  <Suspense fallback={<Loading />}>
+    <UserProfile />
+  </Suspense>
+</ErrorBoundary>
+
+function UserProfile() {
+  // useSuspenseQuery: 로딩/에러를 상위로 위임
+  const { data } = useSuspenseQuery(userQueries.detail(userId));
+  return <div>{data.name}</div>;  // data는 항상 존재
+}
+```
+
+## 하지 말아야 할 것
+
+```typescript
+// ❌ queryKey에 함수나 불안정한 참조
+useQuery({ queryKey: ['users', { filter: () => {} }] });
+
+// ❌ queryFn 안에서 조건부 로직
+useQuery({
+  queryFn: () => (isAdmin ? fetchAdminData() : fetchUserData()),
+});
+
+// ❌ 불필요한 상태 동기화
+const { data } = useQuery({ queryKey: ['user'] });
+const [user, setUser] = useState(data);  // 왜?
+```
+
+심플하게 시작하고, 필요할 때 확장하세요.
