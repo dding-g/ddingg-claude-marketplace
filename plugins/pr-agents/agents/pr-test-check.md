@@ -1,3 +1,9 @@
+---
+name: pr-test-check
+description: PR 테스트 검증 에이전트. /test-check 명령어 또는 PR 생성/업데이트 시 테스트 커버리지와 품질을 검증하고 누락된 테스트를 식별합니다.
+tools: Read, Grep, Glob, Bash
+---
+
 # PR Test Check Agent
 
 > Pull Request 테스트 검증 에이전트

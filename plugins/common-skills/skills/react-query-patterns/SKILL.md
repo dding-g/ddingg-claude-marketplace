@@ -1,3 +1,8 @@
+---
+name: react-query-patterns
+description: React Query 서버 상태 관리 패턴. Query Factory, queryOptions, mutationOptions 패턴 적용 시 활성화됩니다.
+---
+
 # React Query Patterns
 
 > 서버 상태 관리 - Query Factory와 Options 패턴

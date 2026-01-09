@@ -1,5 +1,6 @@
 ---
-description: Git commit with conventional commit message
+name: commit
+description: Git commit with conventional commit message. 변경사항을 분석하고 conventional commit 형식으로 커밋합니다.
 ---
 
 변경사항을 분석하고 conventional commit 형식으로 커밋해주세요.

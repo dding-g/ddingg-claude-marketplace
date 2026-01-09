@@ -1,3 +1,9 @@
+---
+name: pr-security
+description: PR 보안 검증 에이전트. /security 명령어 또는 PR 생성/업데이트 시 보안 취약점을 분석하고 잠재적 보안 이슈를 식별합니다.
+tools: Read, Grep, Glob, Bash
+---
+
 # PR Security Agent
 
 > Pull Request 보안 검증 에이전트

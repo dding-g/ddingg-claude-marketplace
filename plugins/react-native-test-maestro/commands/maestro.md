@@ -1,5 +1,6 @@
 ---
-description: Maestro E2E 테스트 전체 워크플로우 실행
+name: maestro
+description: Maestro E2E 테스트 전체 워크플로우 실행. 설정 확인, 테스트 플랜 작성, 플로우 검증, 테스트 실행을 순차적으로 수행합니다.
 ---
 
 # Maestro E2E Testing

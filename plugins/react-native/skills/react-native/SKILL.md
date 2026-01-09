@@ -1,3 +1,8 @@
+---
+name: react-native
+description: React Native/Expo 모바일 앱 개발 패턴. Expo Router, 네이티브 기능, 성능 최적화 관련 코드 작성 시 활성화됩니다.
+---
+
 # React Native Skill
 
 > React Native / Expo 기반 모바일 앱 개발 가이드

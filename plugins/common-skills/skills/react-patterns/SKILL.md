@@ -1,3 +1,8 @@
+---
+name: react-patterns
+description: React 19+ 모던 패턴. 상태 관리, Suspense, Compound Components 관련 코드 작성 시 활성화됩니다.
+---
+
 # Modern React Patterns
 
 > React 19+ 시대의 패턴

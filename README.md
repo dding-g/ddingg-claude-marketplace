@@ -170,6 +170,14 @@ PR 에이전트는 커맨드로 실행:
 - 훅: `useCamelCase`
 - 상수: `SCREAMING_SNAKE_CASE`
 
+## 스펙 준수
+
+모든 스킬, 에이전트, 명령어 파일은 Claude Code 공식 플러그인 스펙을 준수합니다:
+
+- **SKILL.md**: YAML frontmatter (`name`, `description`)
+- **Agent files**: YAML frontmatter (`name`, `description`, `tools`)
+- **Command files**: YAML frontmatter (`name`, `description`)
+
 ## 기여하기
 
 [CONTRIBUTING.md](./CONTRIBUTING.md) 참고

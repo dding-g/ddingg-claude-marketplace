@@ -1,3 +1,9 @@
+---
+name: maestro-test-plan
+description: Maestro E2E 테스트 플랜 작성 에이전트. 프로젝트의 화면과 기능을 분석하여 체계적인 Maestro E2E 테스트 플랜을 수립하고 플로우 파일을 생성합니다.
+tools: Read, Grep, Glob, Bash, Write
+---
+
 # Maestro Test Plan Agent
 
 > E2E 테스트 플랜 작성 전문가

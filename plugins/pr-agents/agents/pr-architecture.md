@@ -1,3 +1,9 @@
+---
+name: pr-architecture
+description: PR 아키텍처 검증 에이전트. /arch 명령어 또는 PR 생성/업데이트 시 FSD 아키텍처 원칙과 프로젝트 컨벤션 준수 여부를 검증합니다.
+tools: Read, Grep, Glob, Bash
+---
+
 # PR Architecture Agent
 
 > Pull Request 아키텍처 검증 에이전트

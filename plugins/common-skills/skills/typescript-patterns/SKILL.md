@@ -1,3 +1,8 @@
+---
+name: typescript-patterns
+description: TypeScript 실용적 패턴. 타입 추론, 유틸리티 타입, 제네릭, 타입 가드 관련 코드 작성 시 활성화됩니다.
+---
+
 # TypeScript Patterns
 
 > 실용적 타입 작성법

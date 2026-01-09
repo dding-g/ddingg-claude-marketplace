@@ -1,3 +1,9 @@
+---
+name: pr-review
+description: PR 코드 리뷰 에이전트. /review 명령어 또는 PR 생성/업데이트 시 코드 품질, 보안, 성능 관점에서 리뷰를 수행합니다.
+tools: Read, Grep, Glob, Bash
+---
+
 # PR Review Agent
 
 > Pull Request 리뷰 에이전트

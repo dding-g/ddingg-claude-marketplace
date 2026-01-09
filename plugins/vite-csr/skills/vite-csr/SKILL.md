@@ -1,3 +1,8 @@
+---
+name: vite-csr
+description: Vite 기반 React SPA 패턴. React Router, 코드 스플리팅, 클라이언트 상태 관리 관련 코드 작성 시 활성화됩니다.
+---
+
 # Vite CSR Project Skill
 
 > Vite 기반 React SPA/CSR 프로젝트 개발 가이드

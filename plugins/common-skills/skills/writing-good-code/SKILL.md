@@ -1,3 +1,8 @@
+---
+name: writing-good-code
+description: 읽기 쉽고 유지보수하기 좋은 코드 작성법. 네이밍, 함수 분리, Early Return 패턴 적용 시 활성화됩니다.
+---
+
 # Writing Good Code
 
 > 읽기 쉽고, 고치기 쉬운 코드

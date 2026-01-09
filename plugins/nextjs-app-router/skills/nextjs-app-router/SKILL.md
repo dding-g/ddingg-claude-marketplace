@@ -1,3 +1,8 @@
+---
+name: nextjs-app-router
+description: Next.js 15+ App Router 패턴. Server Components, Server Actions, 데이터 페칭 관련 코드 작성 시 활성화됩니다.
+---
+
 # Next.js App Router Skill
 
 > Next.js 15+ App Router 기반 모던 프론트엔드 개발 가이드

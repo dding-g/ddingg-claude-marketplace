@@ -1,3 +1,9 @@
+---
+name: pr-summary
+description: PR 변경사항 요약 에이전트. /summary 명령어 또는 PR 생성 시 변경사항을 분석하여 팀원들이 빠르게 이해할 수 있는 요약을 생성합니다.
+tools: Read, Grep, Glob, Bash
+---
+
 # PR Summary Agent
 
 > Pull Request 변경사항 요약 에이전트

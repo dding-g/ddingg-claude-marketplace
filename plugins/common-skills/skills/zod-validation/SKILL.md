@@ -1,3 +1,8 @@
+---
+name: zod-validation
+description: Zod 스키마 검증 패턴. 폼 검증, API 응답 검증, React Hook Form 통합 시 활성화됩니다.
+---
+
 # Zod Validation
 
 > 스키마 검증 - 핵심 패턴만

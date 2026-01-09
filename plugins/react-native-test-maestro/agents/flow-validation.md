@@ -1,3 +1,9 @@
+---
+name: flow-validation
+description: Maestro 플로우 파일 검증 에이전트. .maestro/ 폴더의 모든 플로우 파일을 검증하여 문법 오류, 구조 문제, 안정성 이슈를 사전에 발견합니다.
+tools: Read, Grep, Glob
+---
+
 # Flow Validation Agent
 
 > Maestro 플로우 파일 검증 전문가

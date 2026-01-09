@@ -1,3 +1,8 @@
+---
+name: fsd-architecture
+description: Feature-Sliced Design 아키텍처 패턴. FSD, 레이어, 슬라이스, 의존성 규칙 관련 코드 작성 시 활성화됩니다.
+---
+
 # FSD Architecture
 
 > Feature-Sliced Design - 프론트엔드 표준 아키텍처
