@@ -24,6 +24,9 @@
 # PR 에이전트
 /plugin install pr-agents@ddingg-marketplace
 
+# Maestro E2E 테스트
+/plugin install react-native-test-maestro@ddingg-marketplace
+
 # 유틸리티
 /plugin install utils@ddingg-marketplace
 ```
@@ -53,6 +56,7 @@ ddingg-claude-marketplace/
 │   ├── nextjs-app-router/            # Next.js 15+ App Router
 │   ├── vite-csr/                     # Vite CSR/SPA
 │   ├── react-native/                 # React Native/Expo
+│   ├── react-native-test-maestro/    # Maestro E2E 테스트
 │   ├── pr-agents/                    # PR 에이전트 (5개)
 │   └── utils/                        # 유틸리티 (commit, hooks)
 │
@@ -109,6 +113,17 @@ PR 코드 리뷰 에이전트
 | **Test Check** | 테스트 커버리지 | `/test-check` |
 | **Security** | 보안 취약점 | `/security` |
 | **Architecture** | FSD 아키텍처 검증 | `/arch` |
+
+### react-native-test-maestro
+
+React Native Maestro E2E 테스트 도구
+
+| 커맨드/에이전트 | 역할 |
+|----------------|------|
+| `/maestro` | 전체 워크플로우 실행 (설정 → 플랜 → 검증 → 테스트) |
+| **maestro-test-plan** | 테스트 플랜 작성 전문가 |
+| **flow-validation** | 플로우 파일 검증 전문가 |
+| **tester** | 테스트 실행 및 분석 전문가 |
 
 ### utils
 
