@@ -56,6 +56,14 @@
       "version": "1.0.0",
       "category": "development",
       "keywords": ["git", "commit", "hooks", "utilities"]
+    },
+    {
+      "name": "react-native-test-maestro",
+      "source": "./plugins/react-native-test-maestro",
+      "description": "React Native Maestro 테스트 도구",
+      "version": "1.0.0",
+      "category": "development",
+      "keywords": ["testing", "quality", "ci", "react-native", "maestro", "e2e"]
     }
   ]
 }

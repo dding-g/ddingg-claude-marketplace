@@ -1,0 +1,10 @@
+{
+  "name": "react-native-test-maestro",
+  "version": "1.0.0",
+  "description": "React Native Maestro 테스트 도구",
+  "author": {
+    "name": "ddingg"
+  },
+  "keywords": ["testing", "quality", "ci", "react-native", "maestro", "e2e"],
+  "category": "development"
+}
