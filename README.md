@@ -2,6 +2,28 @@
 
 프론트엔드 개발을 위한 Claude 스킬 및 에이전트
 
+## 설치
+
+### Claude Code 플러그인으로 설치
+
+```bash
+# 마켓플레이스 추가 (최초 1회)
+/plugin marketplace add ddingg/ddingg-claude-marketplace
+
+# 플러그인 설치
+/plugin install frontend-claude-settings@ddingg
+```
+
+### 수동 설치
+
+```bash
+# 프로젝트 클론
+git clone https://github.com/ddingg/ddingg-claude-marketplace.git
+
+# Claude Code settings에 추가
+# ~/.claude/settings.json 또는 프로젝트 .claude/settings.json
+```
+
 ## 📁 구조
 
 ```
@@ -75,9 +97,24 @@ PR 에이전트는 코멘트에서 커맨드로 실행:
 /security
 ```
 
+## 프로젝트 관리 Commands
+
+이 마켓플레이스를 개발/유지보수하기 위한 명령어:
+
+| 커맨드 | 설명 |
+|--------|------|
+| `/add-skill <name>` | 새 스킬 추가 |
+| `/add-agent <name>` | 새 에이전트 추가 |
+| `/validate-structure` | 구조 검증 |
+| `/generate-readme` | README 자동 생성 |
+
 ## 컨벤션
 
 - 파일명: `kebab-case`
 - 컴포넌트: `PascalCase`
 - 훅: `useCamelCase`
 - 상수: `SCREAMING_SNAKE_CASE`
+
+## 기여하기
+
+[CONTRIBUTING.md](./CONTRIBUTING.md) 참고
