@@ -1,0 +1,10 @@
+{
+  "name": "utils",
+  "version": "1.0.0",
+  "description": "유틸리티 - Git commit 명령어, 훅",
+  "author": {
+    "name": "ddingg"
+  },
+  "keywords": ["git", "commit", "hooks", "utilities"],
+  "category": "development"
+}

@@ -1,23 +1,87 @@
-# Contributing to Frontend Claude Settings
+# Contributing to ddingg-marketplace
 
-프론트엔드 Claude 스킬 마켓플레이스에 기여해 주셔서 감사합니다.
+ddingg-marketplace에 기여해 주셔서 감사합니다.
 
 ## 시작하기
 
 ### 프로젝트 클론
 
 ```bash
-git clone https://github.com/ddingg/ddingg-claude-marketplace.git
+git clone https://github.com/dding-g/ddingg-claude-marketplace.git
 cd ddingg-claude-marketplace
 ```
 
-### 프로젝트 관리 Commands
+### 로컬 테스트
 
 ```bash
-/add-skill <skill-name>      # 새 스킬 추가
-/add-agent <agent-name>      # 새 에이전트 추가
-/validate-structure          # 구조 검증
-/generate-readme             # README 자동 생성
+# 로컬 마켓플레이스 추가
+/plugin marketplace add ./
+
+# 플러그인 설치 테스트
+/plugin install frontend-claude-settings@ddingg-marketplace
+```
+
+## 마켓플레이스 구조
+
+```
+ddingg-claude-marketplace/
+├── .claude-plugin/
+│   └── marketplace.json              # 마켓플레이스 카탈로그
+├── plugins/
+│   └── <plugin-name>/
+│       ├── .claude-plugin/
+│       │   └── plugin.json           # 플러그인 매니페스트
+│       ├── skills/                   # 스킬
+│       ├── agents/                   # 에이전트
+│       ├── commands/                 # 명령어
+│       └── hooks/                    # 훅
+└── .claude/                          # 마켓플레이스 개발용 (배포 안됨)
+```
+
+## 새 플러그인 추가하기
+
+### 1. 디렉토리 생성
+
+```bash
+plugins/<plugin-name>/
+├── .claude-plugin/
+│   └── plugin.json
+├── skills/
+├── agents/
+├── commands/
+└── hooks/
+```
+
+또는 `/add-plugin <plugin-name>` 명령어 사용
+
+### 2. plugin.json 작성
+
+```json
+{
+  "name": "<plugin-name>",
+  "version": "1.0.0",
+  "description": "플러그인 설명",
+  "author": {
+    "name": "ddingg"
+  },
+  "keywords": ["keyword1", "keyword2"],
+  "category": "development"
+}
+```
+
+### 3. marketplace.json 업데이트
+
+```json
+{
+  "plugins": [
+    {
+      "name": "<plugin-name>",
+      "source": "./plugins/<plugin-name>",
+      "description": "플러그인 설명",
+      "version": "1.0.0"
+    }
+  ]
+}
 ```
 
 ## 새 스킬 추가하기
@@ -26,12 +90,14 @@ cd ddingg-claude-marketplace
 
 ```bash
 # Common 스킬 (프레임워크 독립적)
-skills/common/<skill-name>/SKILL.md
+plugins/<plugin-name>/skills/common/<skill-name>/SKILL.md
 
 # Platform 스킬 (프레임워크 특화)
-skills/<platform-name>/SKILL.md
-skills/<platform-name>/patterns/<pattern-name>.md
+plugins/<plugin-name>/skills/<platform-name>/SKILL.md
+plugins/<plugin-name>/skills/<platform-name>/patterns/
 ```
+
+또는 `/add-skill <skill-name>` 명령어 사용
 
 ### 2. SKILL.md 구조
 
@@ -95,8 +161,10 @@ const userData = getUserData();
 ### 1. 파일 생성
 
 ```bash
-agents/pr-<name>.md
+plugins/<plugin-name>/agents/pr-<name>.md
 ```
+
+또는 `/add-agent <agent-name>` 명령어 사용
 
 ### 2. 에이전트 구조
 
@@ -154,7 +222,8 @@ agents/pr-<name>.md
 
 | 대상 | 규칙 | 예시 |
 |------|------|------|
-| 디렉토리 | kebab-case | `react-patterns` |
+| 플러그인 | kebab-case | `frontend-claude-settings` |
+| 스킬 디렉토리 | kebab-case | `react-patterns` |
 | 스킬 파일 | SKILL.md | `SKILL.md` |
 | 에이전트 파일 | pr-<name>.md | `pr-review.md` |
 | 패턴 파일 | kebab-case.md | `data-fetching.md` |
@@ -166,30 +235,31 @@ agents/pr-<name>.md
 ```
 feat: add <skill-name> skill
 fix: correct example in <skill-name>
-docs: update README with new commands
+docs: update README with new plugins
 ```
 
 ### PR 체크리스트
 
+- [ ] plugin.json에 필수 필드 포함 (name, version, description)
 - [ ] SKILL.md에 필수 섹션 포함 (Overview, Activation, Core Patterns)
 - [ ] 코드 예제가 문법적으로 올바름
 - [ ] 좋은/나쁜 예제 모두 포함
-- [ ] README.md 업데이트됨
+- [ ] marketplace.json 업데이트됨 (새 플러그인인 경우)
 - [ ] `/validate-structure` 통과
 
 ### 한 PR에 하나의 변경
 
+- 새 플러그인 추가: 하나의 플러그인만
 - 새 스킬 추가: 하나의 스킬만
 - 새 에이전트 추가: 하나의 에이전트만
 - 버그 수정: 관련된 수정만
 
 ## 버전 관리
 
-plugin.json 버전 업데이트:
-
 | 변경 유형 | 버전 변경 |
 |----------|----------|
-| 새 스킬/에이전트 | minor (1.0.0 → 1.1.0) |
+| 새 플러그인 | marketplace minor (1.0.0 → 1.1.0) |
+| 플러그인 내 새 스킬/에이전트 | plugin minor (1.0.0 → 1.1.0) |
 | 버그 수정 | patch (1.0.0 → 1.0.1) |
 | Breaking changes | major (1.0.0 → 2.0.0) |
 

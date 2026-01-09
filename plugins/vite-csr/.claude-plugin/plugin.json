@@ -1,0 +1,10 @@
+{
+  "name": "vite-csr",
+  "version": "1.0.0",
+  "description": "Vite + React SPA 패턴 - React Router, Zustand, 코드 스플리팅",
+  "author": {
+    "name": "ddingg"
+  },
+  "keywords": ["vite", "react", "spa", "csr", "react-router", "zustand"],
+  "category": "development"
+}

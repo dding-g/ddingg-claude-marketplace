@@ -1,0 +1,10 @@
+{
+  "name": "common-skills",
+  "version": "1.0.0",
+  "description": "공통 프론트엔드 스킬 - TypeScript, React, FSD 아키텍처, React Query, Zod 검증",
+  "author": {
+    "name": "ddingg"
+  },
+  "keywords": ["frontend", "typescript", "react", "fsd", "react-query", "zod"],
+  "category": "development"
+}

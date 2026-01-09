@@ -15,4 +15,4 @@ description: Git commit with conventional commit message
    - test: 테스트 추가/수정
    - chore: 빌드, 설정 변경
 4. 커밋 메시지는 한글로 작성
-5. 커밋 실행
+5. **Co-Authored-By 줄 없이** 커밋 실행

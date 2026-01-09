@@ -1,0 +1,10 @@
+{
+  "name": "react-native",
+  "version": "1.0.0",
+  "description": "React Native/Expo 패턴 - Expo Router, 네이티브 기능, 성능 최적화",
+  "author": {
+    "name": "ddingg"
+  },
+  "keywords": ["react-native", "expo", "mobile", "ios", "android"],
+  "category": "development"
+}

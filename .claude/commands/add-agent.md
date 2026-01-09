@@ -1,6 +1,6 @@
 # Add Agent Command
 
-> 마켓플레이스에 새 PR 에이전트를 추가합니다
+> 마켓플레이스 플러그인에 새 PR 에이전트를 추가합니다
 
 ## 사용법
 
@@ -12,17 +12,22 @@ $ARGUMENTS 로 에이전트 이름이 전달됩니다.
 
 ## 워크플로우
 
-### 1. 에이전트 정보 수집
+### 1. 플러그인 선택
+
+사용자에게 질문:
+- 어떤 플러그인에 에이전트를 추가할지 선택 (기본: frontend-claude-settings)
+
+### 2. 에이전트 정보 수집
 
 사용자에게 질문:
 - 에이전트 목적 (예: 성능 분석, 접근성 검사)
 - 트리거 커맨드 (예: /perf, /a11y)
 - 주요 체크 항목
 
-### 2. 에이전트 파일 생성
+### 3. 에이전트 파일 생성
 
 ```bash
-agents/pr-<agent-name>.md
+plugins/<plugin-name>/agents/pr-<agent-name>.md
 ```
 
 ### 3. 템플릿 생성
@@ -104,5 +109,5 @@ agents/pr-<agent-name>.md
 
 결과:
 ```
-agents/pr-performance.md
+plugins/frontend-claude-settings/agents/pr-performance.md
 ```

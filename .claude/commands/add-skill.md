@@ -1,6 +1,6 @@
 # Add Skill Command
 
-> 마켓플레이스에 새 스킬을 추가합니다
+> 마켓플레이스 플러그인에 새 스킬을 추가합니다
 
 ## 사용법
 
@@ -12,23 +12,28 @@ $ARGUMENTS 로 스킬 이름이 전달됩니다.
 
 ## 워크플로우
 
-### 1. 카테고리 확인
+### 1. 플러그인 선택
 
 사용자에게 질문:
-- **common**: 프레임워크 독립적인 공통 스킬 (skills/common/)
+- 어떤 플러그인에 스킬을 추가할지 선택 (기본: frontend-claude-settings)
+
+### 2. 카테고리 확인
+
+사용자에게 질문:
+- **common**: 프레임워크 독립적인 공통 스킬
 - **platform**: 특정 플랫폼 스킬 (nextjs-app-router, vite-csr, react-native)
 
-### 2. 디렉토리 생성
+### 3. 디렉토리 생성
 
 카테고리에 따라 생성:
 
 ```bash
 # Common 스킬
-skills/common/<skill-name>/SKILL.md
+plugins/<plugin-name>/skills/common/<skill-name>/SKILL.md
 
 # Platform 스킬
-skills/<platform>/<skill-name>/SKILL.md
-skills/<platform>/<skill-name>/patterns/  # 선택사항
+plugins/<plugin-name>/skills/<platform>/<skill-name>/SKILL.md
+plugins/<plugin-name>/skills/<platform>/<skill-name>/patterns/  # 선택사항
 ```
 
 ### 3. SKILL.md 템플릿 생성
@@ -104,5 +109,5 @@ skills/<platform>/<skill-name>/patterns/  # 선택사항
 
 결과:
 ```
-skills/common/state-management/SKILL.md
+plugins/frontend-claude-settings/skills/common/state-management/SKILL.md
 ```

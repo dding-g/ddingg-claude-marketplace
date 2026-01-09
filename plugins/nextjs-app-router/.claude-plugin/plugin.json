@@ -1,0 +1,10 @@
+{
+  "name": "nextjs-app-router",
+  "version": "1.0.0",
+  "description": "Next.js 15+ App Router 패턴 - Server Components, Server Actions, 데이터 페칭",
+  "author": {
+    "name": "ddingg"
+  },
+  "keywords": ["nextjs", "app-router", "server-components", "react"],
+  "category": "development"
+}
