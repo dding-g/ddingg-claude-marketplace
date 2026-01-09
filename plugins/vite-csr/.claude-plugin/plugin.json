@@ -5,6 +5,5 @@
   "author": {
     "name": "ddingg"
   },
-  "keywords": ["vite", "react", "spa", "csr", "react-router", "zustand"],
-  "category": "development"
+  "keywords": ["vite", "react", "spa", "csr", "react-router", "zustand"]
 }

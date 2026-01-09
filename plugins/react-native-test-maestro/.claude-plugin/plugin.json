@@ -5,6 +5,5 @@
   "author": {
     "name": "ddingg"
   },
-  "keywords": ["testing", "quality", "ci", "react-native", "maestro", "e2e"],
-  "category": "development"
+  "keywords": ["testing", "quality", "ci", "react-native", "maestro", "e2e"]
 }

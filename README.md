@@ -172,8 +172,9 @@ PR 에이전트는 커맨드로 실행:
 
 ## 스펙 준수
 
-모든 스킬, 에이전트, 명령어 파일은 Claude Code 공식 플러그인 스펙을 준수합니다:
+모든 파일은 Claude Code 공식 플러그인 스펙을 준수합니다:
 
+- **plugin.json**: `name`, `version`, `description`, `author`, `keywords` 필드만 사용
 - **SKILL.md**: YAML frontmatter (`name`, `description`)
 - **Agent files**: YAML frontmatter (`name`, `description`, `tools`)
 - **Command files**: YAML frontmatter (`name`, `description`)
