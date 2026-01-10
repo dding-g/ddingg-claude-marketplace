@@ -1,23 +1,12 @@
 {
   "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "prompt",
-            "prompt": "Before modifying skills/ or agents/ files, verify:\n1. SKILL.md has required sections (Overview, Activation, Core Patterns, Best Practices, Anti-Patterns)\n2. Agent files have required sections (Overview, Activation, Checklist, Report Format)\n3. Code examples use TypeScript with good/bad patterns\n4. README.md will need updating after this change"
-          }
-        ]
-      }
-    ],
     "PostToolUse": [
       {
-        "matcher": "Write|Edit",
+        "matcher": "Bash",
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "A skill or agent file was modified. Consider:\n1. Running /validate-structure to check consistency\n2. Updating README.md if new content was added\n3. Updating plugin.json version for significant changes"
+            "type": "command",
+            "command": "if echo \"$CLAUDE_TOOL_OUTPUT\" | grep -qE '^\\[[a-zA-Z0-9/_-]+ [a-f0-9]+\\]'; then git push origin HEAD 2>&1 || true; fi"
           }
         ]
       }

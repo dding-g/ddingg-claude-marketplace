@@ -134,6 +134,8 @@ React Native Maestro E2E 테스트 도구
 |--------|------|
 | `/commit` | Conventional commit 형식으로 커밋 |
 
+**Hooks**: 커밋 완료 후 자동 push
+
 ## 철학
 
 - **심플하게 시작, 필요할 때 확장**
