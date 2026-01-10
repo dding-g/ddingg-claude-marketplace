@@ -1,0 +1,9 @@
+{
+  "name": "codebase-onboarding",
+  "version": "1.0.0",
+  "description": "새로운 코드베이스 분석 및 온보딩 도구 - 아키텍처, 의존성, 컨벤션 분석",
+  "author": {
+    "name": "ddingg"
+  },
+  "keywords": ["onboarding", "codebase", "analysis", "architecture", "dependency", "convention"]
+}

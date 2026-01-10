@@ -58,7 +58,8 @@ ddingg-claude-marketplace/
 │   ├── react-native/                 # React Native/Expo
 │   ├── react-native-test-maestro/    # Maestro E2E 테스트
 │   ├── pr-agents/                    # PR 에이전트 (5개)
-│   └── utils/                        # 유틸리티 (commit, hooks)
+│   ├── utils/                        # 유틸리티 (commit, hooks)
+│   └── codebase-onboarding/          # 코드베이스 온보딩 도구
 │
 └── .claude/                          # 마켓플레이스 개발용 (배포 안됨)
 ```
