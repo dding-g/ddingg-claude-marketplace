@@ -128,13 +128,11 @@ React Native Maestro E2E 테스트 도구
 
 ### utils
 
-유틸리티 명령어 및 훅
+유틸리티 명령어
 
 | 커맨드 | 설명 |
 |--------|------|
-| `/commit` | Conventional commit 형식으로 커밋 |
-
-**Hooks**: 커밋 완료 후 자동 push
+| `/commit` | Conventional commit 형식으로 커밋 및 push (main/develop 제외) |
 
 ## 철학
 
