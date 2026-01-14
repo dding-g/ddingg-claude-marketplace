@@ -1,9 +1,9 @@
 {
   "name": "utils",
   "version": "1.0.0",
-  "description": "유틸리티 - Git commit 명령어, 훅",
+  "description": "유틸리티 - Git commit, ship(commit-push-pr) 명령어",
   "author": {
     "name": "ddingg"
   },
-  "keywords": ["git", "commit", "hooks", "utilities"]
+  "keywords": ["git", "commit", "push", "pr", "ship", "linear", "utilities"]
 }
