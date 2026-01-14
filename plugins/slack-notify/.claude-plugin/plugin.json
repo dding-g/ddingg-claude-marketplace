@@ -6,7 +6,6 @@
     "name": "ddingg"
   },
   "keywords": ["slack", "notification", "webhook", "hooks"],
-  "category": "utilities",
   "hooks": {
     "PostToolUse": [
       {

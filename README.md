@@ -191,7 +191,7 @@ PR 에이전트는 커맨드로 실행:
 
 모든 파일은 Claude Code 공식 플러그인 스펙을 준수합니다:
 
-- **plugin.json**: `name`, `version`, `description`, `author`, `keywords` 필드만 사용
+- **plugin.json**: `name`, `version`, `description`, `author`, `keywords`, `hooks` 필드만 사용 (`category` 등 미지원)
 - **hooks.json**: 이벤트별 객체 구조 (`PreToolUse`, `PostToolUse` 등), `matcher`와 `hooks` 배열 사용
 - **SKILL.md**: YAML frontmatter (`name`, `description`)
 - **Agent files**: YAML frontmatter (`name`, `description`, `tools`)
