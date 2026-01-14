@@ -64,6 +64,14 @@
       "version": "1.0.0",
       "category": "development",
       "keywords": ["testing", "quality", "ci", "react-native", "maestro", "e2e"]
+    },
+    {
+      "name": "slack-notify",
+      "source": "./plugins/slack-notify",
+      "description": "작업 완료 시 Slack 알림 - git commit 후 자동 알림 hook 포함",
+      "version": "1.0.0",
+      "category": "utilities",
+      "keywords": ["slack", "notification", "webhook", "hooks"]
     }
   ]
 }

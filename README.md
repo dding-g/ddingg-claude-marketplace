@@ -29,6 +29,9 @@
 
 # 유틸리티
 /plugin install utils@ddingg-marketplace
+
+# Slack 알림
+/plugin install slack-notify@ddingg-marketplace
 ```
 
 ### 로컬 테스트
@@ -59,7 +62,8 @@ ddingg-claude-marketplace/
 │   ├── react-native-test-maestro/    # Maestro E2E 테스트
 │   ├── pr-agents/                    # PR 에이전트 (5개)
 │   ├── utils/                        # 유틸리티 (commit, hooks)
-│   └── codebase-onboarding/          # 코드베이스 온보딩 도구
+│   ├── codebase-onboarding/          # 코드베이스 온보딩 도구
+│   └── slack-notify/                 # Slack 알림 (commit 후 자동 알림)
 │
 └── .claude/                          # 마켓플레이스 개발용 (배포 안됨)
 ```
@@ -133,6 +137,17 @@ React Native Maestro E2E 테스트 도구
 | 커맨드 | 설명 |
 |--------|------|
 | `/commit` | Conventional commit 형식으로 커밋 및 push (main/develop 제외) |
+
+### slack-notify
+
+Slack 알림 플러그인
+
+| 기능 | 설명 |
+|------|------|
+| **PostToolUse Hook** | git commit 성공 시 자동 Slack 알림 |
+| `/notify-slack` | 수동으로 작업 완료 알림 전송 |
+
+환경 변수: `SLACK_WEBHOOK_URL` 필요
 
 ## 철학
 

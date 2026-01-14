@@ -1,0 +1,23 @@
+{
+  "name": "slack-notify",
+  "version": "1.0.0",
+  "description": "작업 완료 시 Slack 알림을 보내는 플러그인. git commit 후 자동 알림 hook 포함",
+  "author": {
+    "name": "ddingg"
+  },
+  "keywords": ["slack", "notification", "webhook", "hooks"],
+  "category": "utilities",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/plugins/slack-notify/hooks/post-commit-notify.py"
+          }
+        ]
+      }
+    ]
+  }
+}
