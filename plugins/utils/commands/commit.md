@@ -5,6 +5,14 @@ description: Git commit with conventional commit message. 변경사항을 분석
 
 변경사항을 분석하고 conventional commit 형식으로 커밋해주세요.
 
+## 옵션
+
+- `--no-push` 또는 `push=false`: push 하지 않음
+
+전달된 인자: $ARGUMENTS
+
+## 워크플로우
+
 1. `git add -A`로 모든 변경사항 스테이징
 2. `git diff --staged`로 스테이징된 변경사항 확인
 3. 변경 내용을 분석하여 적절한 커밋 메시지 작성:
@@ -17,4 +25,4 @@ description: Git commit with conventional commit message. 변경사항을 분석
    - chore: 빌드, 설정 변경
 4. 커밋 메시지는 한글로 작성
 5. 커밋 실행
-6. `git push origin HEAD`로 commit 한 브랜치 push. 단 develop이나 main 브랜치인 경우는 push 금지.
+6. `git push origin HEAD`로 push (단, `--no-push` 또는 `push=false` 옵션이 있으면 push 생략)

@@ -136,7 +136,8 @@ React Native Maestro E2E 테스트 도구
 
 | 커맨드 | 설명 |
 |--------|------|
-| `/commit` | Conventional commit 형식으로 커밋 및 push (main/develop 제외) |
+| `/commit` | Conventional commit 형식으로 커밋 및 push |
+| `/commit --no-push` | 커밋만 하고 push 생략 |
 
 ### slack-notify
 
