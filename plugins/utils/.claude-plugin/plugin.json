@@ -5,5 +5,5 @@
   "author": {
     "name": "ddingg"
   },
-  "keywords": ["git", "commit", "push", "pr", "ship", "linear", "utilities"]
+  "keywords": ["git", "commit", "push", "pr", "ship", "linear", "utilities", "pr-syncly-client", "syncly"]
 }
