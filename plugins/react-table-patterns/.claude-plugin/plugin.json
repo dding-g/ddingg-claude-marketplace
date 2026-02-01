@@ -1,0 +1,9 @@
+{
+  "name": "react-table-patterns",
+  "version": "1.0.0",
+  "description": "TanStack React Table patterns with DataGrid wrapper, column definitions, and selection",
+  "author": {
+    "name": "ddingg"
+  },
+  "keywords": ["react-table", "tanstack", "datagrid", "table", "columns"]
+}

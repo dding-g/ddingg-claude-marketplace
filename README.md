@@ -63,7 +63,9 @@ ddingg-claude-marketplace/
 │   ├── pr-agents/                    # PR 에이전트 (5개)
 │   ├── utils/                        # 유틸리티 (commit, hooks)
 │   ├── codebase-onboarding/          # 코드베이스 온보딩 도구
-│   └── slack-notify/                 # Slack 알림 (commit 후 자동 알림)
+│   ├── slack-notify/                 # Slack 알림 (commit 후 자동 알림)
+│   ├── agents-md/                    # AGENTS.md 작성 패턴
+│   └── react-table-patterns/         # TanStack React Table 패턴
 │
 └── .claude/                          # 마켓플레이스 개발용 (배포 안됨)
 ```
@@ -150,6 +152,22 @@ Slack 알림 플러그인
 
 환경 변수: `SLACK_WEBHOOK_URL` 필요
 
+### agents-md
+
+AGENTS.md 파일 작성 패턴
+
+- 패시브 컨텍스트 vs 스킬 비교
+- 압축 인덱스 구조
+- 토큰 절약 기법
+
+### react-table-patterns
+
+TanStack React Table 사용 패턴
+
+- DataGrid 래퍼 컴포넌트
+- 컬럼 정의 팩토리 패턴
+- 행 선택, 정렬, 페이지네이션
+
 ## 철학
 
 - **심플하게 시작, 필요할 때 확장**
@@ -178,6 +196,7 @@ PR 에이전트는 커맨드로 실행:
 | `/add-skill <name>` | 플러그인에 새 스킬 추가 |
 | `/add-agent <name>` | 플러그인에 새 에이전트 추가 |
 | `/validate-structure` | 마켓플레이스 구조 검증 |
+| `/optimize-skills` | SKILL.md 파일 품질 분석 및 최적화 제안 |
 | `/generate-readme` | README 자동 생성 |
 
 ## 컨벤션

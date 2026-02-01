@@ -1,24 +1,11 @@
 ---
 name: nextjs-app-router
-description: Next.js 15+ App Router 패턴. Server Components, Server Actions, 데이터 페칭 관련 코드 작성 시 활성화됩니다.
+description: Next.js 15+ App Router patterns. Activated when working with Server Components, Server Actions, data fetching, or App Router routing.
 ---
 
-# Next.js App Router Skill
+# Next.js App Router
 
-> Next.js 15+ App Router 기반 모던 프론트엔드 개발 가이드
-
-## Overview
-
-Next.js App Router의 최신 패턴과 베스트 프랙티스를 제공합니다. Server Components, Server Actions, 그리고 모던 렌더링 전략을 다룹니다.
-
-## Activation
-
-다음 상황에서 이 스킬이 활성화됩니다:
-
-- Next.js, App Router 언급
-- Server Components, Server Actions 관련
-- 페이지 라우팅, 레이아웃 구성
-- 렌더링 전략 (SSR, SSG, ISR) 관련
+> Next.js 15+ App Router modern frontend patterns
 
 ## Project Structure (FSD + App Router)
 
@@ -46,10 +33,9 @@ src/
 ### 1. Server Components (Default)
 
 ```typescript
-// app/users/page.tsx
-// Server Component (기본값)
+// app/users/page.tsx - Server Component (default)
 async function UsersPage() {
-  const users = await fetchUsers(); // 서버에서 직접 호출
+  const users = await fetchUsers();
 
   return (
     <main>
@@ -94,16 +80,13 @@ export async function createPost(formData: FormData) {
   const title = formData.get('title') as string;
   const content = formData.get('content') as string;
 
-  // 유효성 검증
   const result = postSchema.safeParse({ title, content });
   if (!result.success) {
     return { error: result.error.flatten() };
   }
 
-  // DB 저장
   await db.post.create({ data: result.data });
 
-  // 캐시 무효화 및 리다이렉트
   revalidatePath('/posts');
   redirect('/posts');
 }
@@ -132,16 +115,16 @@ export const CreatePostForm = () => {
 };
 ```
 
-### 4. Data Fetching Patterns
+### 4. Data Fetching
 
 ```typescript
 // entities/post/api/queries.ts
 import { cache } from 'react';
 
-// React cache로 요청 중복 제거
+// React cache for request dedup
 export const getPost = cache(async (id: string) => {
   const response = await fetch(`${API_URL}/posts/${id}`, {
-    next: { revalidate: 60 }, // ISR: 60초
+    next: { revalidate: 60 }, // ISR: 60s
   });
   return response.json();
 });
@@ -154,12 +137,11 @@ export const getPosts = cache(async () => {
 });
 ```
 
-### 5. Parallel & Sequential Data Fetching
+### 5. Parallel Data Fetching
 
 ```typescript
 // app/dashboard/page.tsx
 async function DashboardPage() {
-  // 병렬 데이터 페칭
   const [user, stats, notifications] = await Promise.all([
     getUser(),
     getStats(),
@@ -167,11 +149,7 @@ async function DashboardPage() {
   ]);
 
   return (
-    <Dashboard
-      user={user}
-      stats={stats}
-      notifications={notifications}
-    />
+    <Dashboard user={user} stats={stats} notifications={notifications} />
   );
 }
 ```
@@ -190,8 +168,6 @@ async function PostPage({ params }: { params: Promise<{ id: string }> }) {
     <article>
       <h1>{post.title}</h1>
       <p>{post.content}</p>
-
-      {/* 댓글은 별도로 스트리밍 */}
       <Suspense fallback={<CommentsSkeleton />}>
         <Comments postId={id} />
       </Suspense>
@@ -200,7 +176,7 @@ async function PostPage({ params }: { params: Promise<{ id: string }> }) {
 }
 ```
 
-### 7. Route Handlers (API Routes)
+### 7. Route Handlers
 
 ```typescript
 // app/api/posts/route.ts
@@ -209,9 +185,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const page = searchParams.get('page') ?? '1';
-
   const posts = await getPosts({ page: Number(page) });
-
   return NextResponse.json(posts);
 }
 
@@ -220,10 +194,7 @@ export async function POST(request: NextRequest) {
   const result = postSchema.safeParse(body);
 
   if (!result.success) {
-    return NextResponse.json(
-      { error: result.error.flatten() },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: result.error.flatten() }, { status: 400 });
   }
 
   const post = await createPost(result.data);
@@ -241,7 +212,6 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('token');
 
-  // 인증 체크
   if (!token && request.nextUrl.pathname.startsWith('/dashboard')) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
@@ -312,24 +282,21 @@ export async function generateMetadata({
 }
 ```
 
-## Component Guidelines
+## Server vs Client Component
 
-### Server vs Client Component 결정
-
-| 사용 사례 | 컴포넌트 타입 |
-|----------|-------------|
-| 데이터 페칭 | Server |
-| 백엔드 리소스 직접 접근 | Server |
-| 민감한 정보 (API 키 등) | Server |
-| 상호작용 (onClick, onChange) | Client |
-| 상태 관리 (useState, useReducer) | Client |
-| 브라우저 API (localStorage 등) | Client |
-| Hooks 사용 | Client |
+|Use Case|Component Type|
+|---|---|
+|Data fetching|Server|
+|Direct backend resource access|Server|
+|Sensitive info (API keys)|Server|
+|Interactions (onClick, onChange)|Client|
+|State management (useState, useReducer)|Client|
+|Browser APIs (localStorage)|Client|
+|Hooks|Client|
 
 ### Composition Pattern
 
 ```typescript
-// widgets/post-card/ui/post-card.tsx
 // Server Component
 async function PostCard({ id }: { id: string }) {
   const post = await getPost(id);
@@ -338,7 +305,6 @@ async function PostCard({ id }: { id: string }) {
     <article>
       <h2>{post.title}</h2>
       <p>{post.excerpt}</p>
-      {/* Client Component를 자식으로 */}
       <LikeButton postId={id} initialCount={post.likes} />
     </article>
   );
@@ -383,31 +349,32 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 ## Best Practices
 
-1. **Server-First**: 기본적으로 Server Component 사용, 필요시에만 'use client'
-2. **Colocation**: 데이터 페칭 로직을 사용하는 곳 가까이 배치
-3. **Streaming**: Suspense로 점진적 페이지 로딩
-4. **Server Actions**: 폼 제출, 뮤테이션은 Server Actions 활용
-5. **캐시 전략**: revalidatePath, revalidateTag로 세밀한 캐시 관리
-6. **Error Boundaries**: error.tsx, not-found.tsx로 에러 처리
+|Practice|Description|
+|---|---|
+|Server-First|Default to Server Components, use 'use client' only when needed|
+|Colocation|Place data fetching logic close to where it's used|
+|Streaming|Use Suspense for progressive page loading|
+|Server Actions|Use for form submissions and mutations|
+|Cache strategy|Use revalidatePath, revalidateTag for granular cache management|
+|Error boundaries|Use error.tsx, not-found.tsx for error handling|
 
-## Anti-Patterns
+## DO NOT
 
 ```typescript
-// ❌ Server Component에서 클라이언트 훅 사용
+// AVOID: client hooks in Server Component
 async function Page() {
   const [count, setCount] = useState(0); // Error!
-  return <div>{count}</div>;
 }
 
-// ❌ 불필요한 'use client'
+// AVOID: unnecessary 'use client'
 'use client';
 function StaticCard({ title }: { title: string }) {
-  return <div>{title}</div>; // 상호작용 없음, Server Component로 충분
+  return <div>{title}</div>; // No interaction, Server Component is enough
 }
 
-// ❌ 클라이언트에서 직접 DB 접근
+// AVOID: direct DB access from client
 'use client';
 async function ClientComponent() {
-  const data = await db.query(); // 보안 위험!
+  const data = await db.query(); // Security risk!
 }
 ```

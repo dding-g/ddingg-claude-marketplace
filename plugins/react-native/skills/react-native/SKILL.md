@@ -1,34 +1,21 @@
 ---
 name: react-native
-description: React Native/Expo 모바일 앱 개발 패턴. Expo Router, 네이티브 기능, 성능 최적화 관련 코드 작성 시 활성화됩니다.
+description: React Native/Expo mobile app patterns. Activated when working with Expo Router, native features, performance optimization, or mobile-specific code.
 ---
 
-# React Native Skill
+# React Native
 
-> React Native / Expo 기반 모바일 앱 개발 가이드
-
-## Overview
-
-React Native와 Expo를 사용한 크로스 플랫폼 모바일 앱 개발의 패턴과 베스트 프랙티스를 제공합니다.
-
-## Activation
-
-다음 상황에서 이 스킬이 활성화됩니다:
-
-- React Native, Expo 언급
-- 모바일 앱 개발 관련
-- 네비게이션, 네이티브 모듈 관련
-- iOS, Android 플랫폼 관련
+> React Native / Expo mobile app development patterns
 
 ## Project Structure (FSD + Expo Router)
 
 ```
 src/
 ├── app/                      # Expo Router (File-based routing)
-│   ├── (auth)/               # Auth Group
+│   ├── (auth)/
 │   │   ├── login.tsx
 │   │   └── signup.tsx
-│   ├── (tabs)/               # Tab Navigation
+│   ├── (tabs)/
 │   │   ├── _layout.tsx
 │   │   ├── index.tsx
 │   │   ├── explore.tsx
@@ -48,7 +35,7 @@ src/
 
 ## Core Patterns
 
-### 1. Expo Router Layout
+### 1. Root Layout
 
 ```typescript
 // app/_layout.tsx
@@ -84,12 +71,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default function TabLayout() {
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: '#007AFF',
-        headerShown: false,
-      }}
-    >
+    <Tabs screenOptions={{ tabBarActiveTintColor: '#007AFF', headerShown: false }}>
       <Tabs.Screen
         name="index"
         options={{
@@ -139,16 +121,10 @@ export default function UserDetailScreen() {
   return <UserProfile user={user} />;
 }
 
-// 네비게이션
+// Navigation
 import { router } from 'expo-router';
-
-// Push
 router.push(`/users/${userId}`);
-
-// Replace
 router.replace('/login');
-
-// Back
 router.back();
 ```
 
@@ -162,9 +138,7 @@ import { useAuth } from '@/features/auth';
 export default function RootLayout() {
   const { isAuthenticated, isLoading } = useAuth();
 
-  if (isLoading) {
-    return <SplashScreen />;
-  }
+  if (isLoading) return <SplashScreen />;
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
@@ -188,17 +162,15 @@ export const secureStorage = {
   async getItem(key: string): Promise<string | null> {
     return SecureStore.getItemAsync(key);
   },
-
   async setItem(key: string, value: string): Promise<void> {
     await SecureStore.setItemAsync(key, value);
   },
-
   async removeItem(key: string): Promise<void> {
     await SecureStore.deleteItemAsync(key);
   },
 };
 
-// Zustand persist와 함께 사용
+// Zustand persist with SecureStore
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
@@ -230,7 +202,7 @@ export function Button({ onPress, children, ...props }: ButtonProps) {
         styles.button,
         Platform.select({
           ios: pressed && styles.iosPressed,
-          android: {}, // Ripple 효과 사용
+          android: {},
         }),
       ]}
       android_ripple={{ color: 'rgba(0,0,0,0.1)' }}
@@ -241,7 +213,7 @@ export function Button({ onPress, children, ...props }: ButtonProps) {
   );
 }
 
-// 플랫폼별 파일 분리
+// Platform-specific file split
 // shared/ui/date-picker/index.ios.tsx
 // shared/ui/date-picker/index.android.tsx
 ```
@@ -268,8 +240,6 @@ export function Screen({ children, edges = ['top'] }: ScreenProps) {
         {
           paddingTop: edges.includes('top') ? insets.top : 0,
           paddingBottom: edges.includes('bottom') ? insets.bottom : 0,
-          paddingLeft: edges.includes('left') ? insets.left : 0,
-          paddingRight: edges.includes('right') ? insets.right : 0,
         },
       ]}
     >
@@ -279,34 +249,25 @@ export function Screen({ children, edges = ['top'] }: ScreenProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
+  container: { flex: 1, backgroundColor: '#fff' },
 });
 ```
 
 ### 8. Keyboard Handling
 
 ```typescript
-// shared/ui/keyboard-avoiding-view/index.tsx
 import {
   KeyboardAvoidingView,
   Platform,
-  StyleSheet,
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
 
-interface Props {
-  children: React.ReactNode;
-}
-
-export function KeyboardDismissView({ children }: Props) {
+export function KeyboardDismissView({ children }: { children: React.ReactNode }) {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
+      style={{ flex: 1 }}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         {children}
@@ -314,50 +275,9 @@ export function KeyboardDismissView({ children }: Props) {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 ```
 
-### 9. Network Status
-
-```typescript
-// shared/lib/hooks/use-network.ts
-import NetInfo from '@react-native-community/netinfo';
-import { useEffect, useState } from 'react';
-
-export function useNetwork() {
-  const [isConnected, setIsConnected] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener((state) => {
-      setIsConnected(state.isConnected ?? true);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  return { isConnected };
-}
-
-// Offline Banner
-export function OfflineBanner() {
-  const { isConnected } = useNetwork();
-
-  if (isConnected) return null;
-
-  return (
-    <View style={styles.banner}>
-      <Text style={styles.text}>오프라인 상태입니다</Text>
-    </View>
-  );
-}
-```
-
-### 10. Push Notifications
+### 9. Push Notifications
 
 ```typescript
 // features/notifications/lib/push.ts
@@ -374,10 +294,7 @@ Notifications.setNotificationHandler({
 });
 
 export async function registerForPushNotifications() {
-  if (!Device.isDevice) {
-    console.log('Push notifications require a physical device');
-    return null;
-  }
+  if (!Device.isDevice) return null;
 
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
   let finalStatus = existingStatus;
@@ -387,9 +304,7 @@ export async function registerForPushNotifications() {
     finalStatus = status;
   }
 
-  if (finalStatus !== 'granted') {
-    return null;
-  }
+  if (finalStatus !== 'granted') return null;
 
   const token = await Notifications.getExpoPushTokenAsync();
 
@@ -404,30 +319,24 @@ export async function registerForPushNotifications() {
 }
 ```
 
-## Styling Patterns
+## Styling
 
 ### NativeWind (Tailwind for RN)
 
 ```typescript
-// shared/ui/card/index.tsx
-import { View, Text } from 'react-native';
-
 export function Card({ title, children }: CardProps) {
   return (
     <View className="bg-white rounded-xl p-4 shadow-sm">
-      <Text className="text-lg font-semibold text-gray-900">
-        {title}
-      </Text>
+      <Text className="text-lg font-semibold text-gray-900">{title}</Text>
       {children}
     </View>
   );
 }
 ```
 
-### StyleSheet Pattern
+### StyleSheet
 
 ```typescript
-// shared/ui/card/index.tsx
 import { View, Text, StyleSheet } from 'react-native';
 
 export function Card({ title, children }: CardProps) {
@@ -448,58 +357,37 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3, // Android
+    elevation: 3,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#111',
-  },
+  title: { fontSize: 18, fontWeight: '600', color: '#111' },
 });
 ```
 
-## Performance Optimization
-
-### FlashList (FlatList 대안)
+## Performance
 
 ```typescript
+// FlashList for large lists
 import { FlashList } from '@shopify/flash-list';
 
-function ProductList({ products }: { products: Product[] }) {
-  return (
-    <FlashList
-      data={products}
-      renderItem={({ item }) => <ProductCard product={item} />}
-      estimatedItemSize={100}
-      keyExtractor={(item) => item.id}
-    />
-  );
-}
-```
+<FlashList
+  data={products}
+  renderItem={({ item }) => <ProductCard product={item} />}
+  estimatedItemSize={100}
+  keyExtractor={(item) => item.id}
+/>
 
-### Image Optimization
-
-```typescript
+// expo-image for optimized images
 import { Image } from 'expo-image';
 
-function Avatar({ uri }: { uri: string }) {
-  return (
-    <Image
-      source={uri}
-      style={{ width: 50, height: 50, borderRadius: 25 }}
-      placeholder={blurhash}
-      contentFit="cover"
-      transition={200}
-    />
-  );
-}
-```
+<Image
+  source={uri}
+  style={{ width: 50, height: 50, borderRadius: 25 }}
+  placeholder={blurhash}
+  contentFit="cover"
+  transition={200}
+/>
 
-### Memoization
-
-```typescript
-import { memo, useCallback } from 'react';
-
+// Memoization for list items
 const ProductCard = memo(function ProductCard({ product, onPress }: Props) {
   return (
     <Pressable onPress={() => onPress(product.id)}>
@@ -507,49 +395,34 @@ const ProductCard = memo(function ProductCard({ product, onPress }: Props) {
     </Pressable>
   );
 });
-
-function ProductList({ products }: Props) {
-  const handlePress = useCallback((id: string) => {
-    router.push(`/products/${id}`);
-  }, []);
-
-  return (
-    <FlashList
-      data={products}
-      renderItem={({ item }) => (
-        <ProductCard product={item} onPress={handlePress} />
-      )}
-      estimatedItemSize={100}
-    />
-  );
-}
 ```
 
 ## Best Practices
 
-1. **Expo Router**: File-based routing으로 네비게이션 구성
-2. **Safe Area**: 항상 SafeAreaProvider와 useSafeAreaInsets 사용
-3. **SecureStore**: 민감한 정보는 SecureStore에 저장
-4. **FlashList**: 대용량 리스트는 FlashList 사용
-5. **expo-image**: 이미지 최적화를 위해 expo-image 사용
-6. **Platform.select**: 플랫폼별 스타일/동작 분기
-7. **Gesture Handler**: 복잡한 제스처는 react-native-gesture-handler 사용
+|Practice|Description|
+|---|---|
+|Expo Router|File-based routing for navigation|
+|Safe Area|Always use SafeAreaProvider + useSafeAreaInsets|
+|SecureStore|Store sensitive data in SecureStore|
+|FlashList|Use for large lists instead of FlatList|
+|expo-image|Use for optimized image loading|
+|Platform.select|Branch per-platform styles/behavior|
 
-## Anti-Patterns
+## DO NOT
 
 ```typescript
-// ❌ 인라인 스타일 남용
+// AVOID: inline styles overuse
 <View style={{ flex: 1, padding: 16, backgroundColor: '#fff' }} />
 
-// ❌ FlatList 대신 map 사용
+// AVOID: map instead of FlatList/FlashList for lists
 {items.map(item => <Item key={item.id} />)}
 
-// ❌ 이미지 크기 미지정
-<Image source={{ uri }} /> // width, height 필수
+// AVOID: missing image dimensions
+<Image source={{ uri }} /> // width, height required
 
-// ❌ 민감한 정보를 AsyncStorage에 저장
-await AsyncStorage.setItem('token', token); // SecureStore 사용
+// AVOID: sensitive data in AsyncStorage
+await AsyncStorage.setItem('token', token); // use SecureStore
 
-// ❌ 키보드 회피 처리 누락
-<TextInput /> // KeyboardAvoidingView로 감싸기
+// AVOID: missing keyboard avoidance
+<TextInput /> // wrap with KeyboardAvoidingView
 ```

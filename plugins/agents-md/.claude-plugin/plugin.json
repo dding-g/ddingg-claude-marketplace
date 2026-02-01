@@ -1,0 +1,9 @@
+{
+  "name": "agents-md",
+  "version": "1.0.0",
+  "description": "AGENTS.md file authoring patterns for AI agent context files",
+  "author": {
+    "name": "ddingg"
+  },
+  "keywords": ["agents-md", "ai-context", "passive-context", "documentation"]
+}

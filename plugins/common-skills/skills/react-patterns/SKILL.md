@@ -1,18 +1,15 @@
 ---
 name: react-patterns
-description: React 19+ 모던 패턴. 상태 관리, Suspense, Compound Components 관련 코드 작성 시 활성화됩니다.
+description: Modern React 19+ patterns. Activated when working with state management, Suspense, Compound Components, or React hooks.
 ---
 
 # Modern React Patterns
 
-> React 19+ 시대의 패턴
+> React 19+ era patterns
 
-## 컴포넌트 구조
-
-### 단순하게 시작
+## Component Structure
 
 ```typescript
-// 대부분의 컴포넌트는 이 정도면 충분
 function UserCard({ user }: { user: User }) {
   return (
     <div className="user-card">
@@ -23,62 +20,47 @@ function UserCard({ user }: { user: User }) {
 }
 ```
 
-### 복잡해지면 분리
+When it grows, split into same-folder modules:
 
 ```typescript
-// 한 파일이 커지면 같은 폴더에 분리
 // features/user/
 // ├── user-card.tsx
 // ├── user-avatar.tsx
 // ├── user-info.tsx
 // └── index.ts
-
-function UserCard({ user }: { user: User }) {
-  return (
-    <div className="user-card">
-      <UserAvatar src={user.avatar} />
-      <UserInfo name={user.name} email={user.email} />
-    </div>
-  );
-}
 ```
 
-## 상태 관리 판단 기준
+## State Management Decision
 
 ```
-이 상태를 누가 알아야 하나?
+Who needs this state?
 
-├─ 이 컴포넌트만 → useState
-├─ 부모-자식 몇 개 → props로 전달
-├─ 멀리 떨어진 여러 컴포넌트 → Context 또는 상태 관리 라이브러리
-└─ 서버 데이터 → React Query
+├─ This component only       → useState
+├─ Parent-child few levels   → props
+├─ Distant multiple components → Context or state library
+└─ Server data               → React Query
 ```
-
-### useState vs useReducer
 
 ```typescript
-// 단순한 상태 → useState
+// Simple state → useState
 const [isOpen, setIsOpen] = useState(false);
 
-// 복잡하거나 연관된 상태 → useReducer
+// Complex/related state → useReducer
 const [state, dispatch] = useReducer(formReducer, initialState);
 ```
 
 ## Compound Components
 
-관련 컴포넌트를 하나의 API로 묶을 때:
-
 ```typescript
-// 사용
 <Select value={selected} onChange={setSelected}>
-  <Select.Trigger>선택하세요</Select.Trigger>
+  <Select.Trigger>Choose</Select.Trigger>
   <Select.Content>
-    <Select.Item value="a">옵션 A</Select.Item>
-    <Select.Item value="b">옵션 B</Select.Item>
+    <Select.Item value="a">Option A</Select.Item>
+    <Select.Item value="b">Option B</Select.Item>
   </Select.Content>
 </Select>
 
-// 구현
+// Implementation
 const SelectContext = createContext<SelectContextValue | null>(null);
 
 function Select({ value, onChange, children }) {
@@ -94,33 +76,25 @@ Select.Content = function Content({ children }) { ... };
 Select.Item = function Item({ value, children }) { ... };
 ```
 
-## Render Props vs Custom Hook
+## Custom Hook vs Render Props
+
+|Pattern|Use When|
+|---|---|
+|Custom Hook|Logic reuse (most cases)|
+|Render Props|Library API design, UI customization needed|
 
 ```typescript
-// Render Props: UI 커스터마이징이 필요할 때
-<MouseTracker>
-  {({ x, y }) => <Cursor x={x} y={y} />}
-</MouseTracker>
-
-// Custom Hook: 로직 재사용 (대부분의 경우 이걸 사용)
+// Custom Hook (preferred)
 function useMousePosition() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   // ...
   return position;
 }
-
-function Cursor() {
-  const { x, y } = useMousePosition();
-  return <div style={{ left: x, top: y }} />;
-}
 ```
-
-**대부분 Custom Hook이 더 나음**. Render Props는 라이브러리 API 설계시에만.
 
 ## Error Boundary
 
 ```typescript
-// 클래스 컴포넌트로 작성 (React 요구사항)
 class ErrorBoundary extends React.Component<Props, State> {
   state = { hasError: false, error: null };
 
@@ -136,28 +110,28 @@ class ErrorBoundary extends React.Component<Props, State> {
   }
 }
 
-// 사용 (react-error-boundary 라이브러리 추천)
+// Recommend: react-error-boundary library
 <ErrorBoundary fallback={<ErrorPage />}>
   <App />
 </ErrorBoundary>
 ```
 
-## Suspense 패턴
+## Suspense
 
 ```typescript
-// 데이터 로딩
+// Data loading
 <Suspense fallback={<Skeleton />}>
-  <UserProfile />  {/* useSuspenseQuery 사용 */}
+  <UserProfile />  {/* uses useSuspenseQuery */}
 </Suspense>
 
-// 코드 스플리팅
+// Code splitting
 const AdminPanel = lazy(() => import('./admin-panel'));
 
 <Suspense fallback={<Loading />}>
   <AdminPanel />
 </Suspense>
 
-// 중첩 Suspense로 점진적 로딩
+// Nested Suspense for progressive loading
 <Suspense fallback={<PageSkeleton />}>
   <Header />
   <Suspense fallback={<ContentSkeleton />}>
@@ -169,25 +143,25 @@ const AdminPanel = lazy(() => import('./admin-panel'));
 </Suspense>
 ```
 
-## React 19 패턴
+## React 19 Patterns
 
 ### use() Hook
 
 ```typescript
-// Promise를 직접 읽기 (Suspense 필요)
+// Read Promise directly (requires Suspense)
 function UserProfile({ userPromise }: { userPromise: Promise<User> }) {
   const user = use(userPromise);
   return <div>{user.name}</div>;
 }
 
-// Context 읽기 (useContext 대체 가능)
+// Read Context (replaces useContext)
 function Button() {
   const theme = use(ThemeContext);
   return <button className={theme.button}>Click</button>;
 }
 ```
 
-### useActionState (폼 처리)
+### useActionState (Form handling)
 
 ```typescript
 async function submitForm(prevState: State, formData: FormData) {
@@ -202,9 +176,9 @@ function Form() {
     <form action={formAction}>
       <input name="email" />
       <button disabled={isPending}>
-        {isPending ? '전송 중...' : '전송'}
+        {isPending ? 'Submitting...' : 'Submit'}
       </button>
-      {state?.success && <p>완료!</p>}
+      {state?.success && <p>Done!</p>}
     </form>
   );
 }
@@ -220,49 +194,40 @@ function LikeButton({ likes, onLike }: Props) {
   );
 
   const handleClick = async () => {
-    addOptimistic(1);  // 즉시 UI 업데이트
-    await onLike();    // 실제 요청
+    addOptimistic(1);
+    await onLike();
   };
 
-  return <button onClick={handleClick}>❤️ {optimisticLikes}</button>;
+  return <button onClick={handleClick}>{optimisticLikes}</button>;
 }
 ```
 
-## 피해야 할 패턴
+## DO NOT
 
 ```typescript
-// ❌ useEffect로 상태 동기화
-const [items, setItems] = useState([]);
+// AVOID: useEffect for state sync
 const [filteredItems, setFilteredItems] = useState([]);
-
 useEffect(() => {
   setFilteredItems(items.filter(i => i.active));
 }, [items]);
+// USE: compute during render
+const filteredItems = useMemo(() => items.filter(i => i.active), [items]);
 
-// ✅ 렌더링 중에 계산
-const filteredItems = useMemo(
-  () => items.filter(i => i.active),
-  [items]
-);
+// AVOID: useEffect for data fetching
+useEffect(() => { fetchUser().then(setUser); }, []);
+// USE: React Query
+const { data: user } = useQuery({ queryKey: ['user'], queryFn: fetchUser });
 
-// ❌ 초기화를 useEffect로
-useEffect(() => {
-  fetchUser().then(setUser);
-}, []);
-
-// ✅ React Query 사용
-const { data: user } = useQuery({
-  queryKey: ['user'],
-  queryFn: fetchUser
-});
-
-// ❌ forwardRef 남용 (React 19에서는 props로 ref 전달 가능)
+// AVOID: forwardRef (React 19 passes ref as prop)
 const Input = forwardRef((props, ref) => <input ref={ref} {...props} />);
-
-// ✅ React 19+
+// USE: React 19+
 function Input({ ref, ...props }) {
   return <input ref={ref} {...props} />;
 }
 ```
 
-**핵심**: 새 패턴을 쫓기보다, 문제를 해결하는 가장 단순한 방법을 선택하세요.
+|Principle|Description|
+|---|---|
+|Start simple|Choose the simplest solution that solves the problem|
+|Derive, don't sync|Compute values instead of syncing with useEffect|
+|Hooks for logic|Extract logic into custom hooks, keep components UI-only|

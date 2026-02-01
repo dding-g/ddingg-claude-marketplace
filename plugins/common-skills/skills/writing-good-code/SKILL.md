@@ -1,41 +1,41 @@
 ---
 name: writing-good-code
-description: 읽기 쉽고 유지보수하기 좋은 코드 작성법. 네이밍, 함수 분리, Early Return 패턴 적용 시 활성화됩니다.
+description: Writing readable, maintainable code. Activated when applying naming conventions, function decomposition, or Early Return patterns.
 ---
 
 # Writing Good Code
 
-> 읽기 쉽고, 고치기 쉬운 코드
+> Readable, easy-to-change code
 
-## 핵심 원칙
+## Core Principles
 
-### 1. 이름이 곧 문서
+### 1. Names Are Documentation
 
 ```typescript
-// ❌
+// AVOID
 const d = new Date().getTime() - startTime;
 if (d > 3000) { ... }
 
-// ✅
+// PREFER
 const elapsedMs = new Date().getTime() - startTime;
 const TIMEOUT_MS = 3000;
 if (elapsedMs > TIMEOUT_MS) { ... }
 ```
 
-### 2. 함수는 한 가지 일만
+### 2. One Function, One Job
 
 ```typescript
-// ❌ 여러 가지 일을 함
+// AVOID: multiple responsibilities
 async function handleSubmit(data) {
   const validated = schema.parse(data);
   const response = await api.post('/users', validated);
   analytics.track('user_created');
-  toast.success('가입 완료');
+  toast.success('Done');
   router.push('/dashboard');
   return response;
 }
 
-// ✅ 각각의 책임을 분리
+// PREFER: separate concerns
 async function createUser(data) {
   return api.post('/users', schema.parse(data));
 }
@@ -44,21 +44,21 @@ function handleSubmit(data) {
   createUser(data)
     .then(() => {
       analytics.track('user_created');
-      toast.success('가입 완료');
+      toast.success('Done');
       router.push('/dashboard');
     });
 }
 ```
 
-### 3. 조건문에 이름을 붙여라
+### 3. Name Your Conditions
 
 ```typescript
-// ❌
+// AVOID
 if (user.age >= 19 && user.membership === 'premium' && !user.isBanned) {
   showContent();
 }
 
-// ✅
+// PREFER
 const canAccessPremiumContent =
   user.age >= 19 &&
   user.membership === 'premium' &&
@@ -69,10 +69,10 @@ if (canAccessPremiumContent) {
 }
 ```
 
-### 4. Early Return으로 중첩 줄이기
+### 4. Early Return to Reduce Nesting
 
 ```typescript
-// ❌
+// AVOID
 function getDiscount(user) {
   if (user) {
     if (user.membership === 'premium') {
@@ -88,7 +88,7 @@ function getDiscount(user) {
   return 0;
 }
 
-// ✅
+// PREFER
 function getDiscount(user) {
   if (!user) return 0;
   if (user.membership !== 'premium') return 0;
@@ -97,44 +97,44 @@ function getDiscount(user) {
 }
 ```
 
-### 5. 관련 코드는 가까이
+### 5. Keep Related Code Together
 
 ```typescript
-// ❌ 타입, 상수, 유틸이 각각 다른 폴더에
+// AVOID: type, constants, utils scattered across folders
 import { User } from '@/types/user';
 import { USER_STATUS } from '@/constants/user';
 import { formatUserName } from '@/utils/user';
 
-// ✅ 함께 사용되는 코드는 함께
+// PREFER: co-located code
 // features/user/index.ts
 export interface User { ... }
 export const USER_STATUS = { ... };
 export function formatUserName(user: User) { ... }
 ```
 
-## 컴포넌트 작성
+## Component Patterns
 
-### Props는 필요한 것만
+### Props: Only What You Need
 
 ```typescript
-// ❌ 전체 객체 전달
+// AVOID: passing entire object
 function UserAvatar({ user }: { user: User }) {
   return <img src={user.avatar} alt={user.name} />;
 }
 
-// ✅ 필요한 것만
+// PREFER: only needed fields
 function UserAvatar({ src, alt }: { src: string; alt: string }) {
   return <img src={src} alt={alt} />;
 }
 ```
 
-### 조건부 렌더링은 심플하게
+### Conditional Rendering
 
 ```typescript
-// ❌ 삼항 중첩
+// AVOID: nested ternaries
 {isLoading ? <Spinner /> : error ? <Error /> : data ? <Content /> : null}
 
-// ✅ Early Return 패턴
+// PREFER: early return
 function Component() {
   if (isLoading) return <Spinner />;
   if (error) return <Error />;
@@ -143,29 +143,10 @@ function Component() {
 }
 ```
 
-### 커스텀 훅으로 로직 추출
+### Extract Logic into Custom Hooks
 
 ```typescript
-// ❌ 컴포넌트에 로직이 섞임
-function SearchResults() {
-  const [query, setQuery] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
-
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedQuery(query), 300);
-    return () => clearTimeout(timer);
-  }, [query]);
-
-  const { data } = useQuery({
-    queryKey: ['search', debouncedQuery],
-    queryFn: () => search(debouncedQuery),
-    enabled: debouncedQuery.length > 0,
-  });
-
-  return (/* UI */);
-}
-
-// ✅ 로직은 훅으로, 컴포넌트는 UI만
+// PREFER: hooks for logic, components for UI
 function useSearch() {
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 300);
@@ -185,64 +166,32 @@ function SearchResults() {
 }
 ```
 
-## 흔한 실수
-
-### 불필요한 상태
+## DO NOT
 
 ```typescript
-// ❌ 파생 가능한 값을 상태로
+// AVOID: derived state as separate useState
 const [items, setItems] = useState([]);
 const [total, setTotal] = useState(0);
-
 useEffect(() => {
   setTotal(items.reduce((sum, item) => sum + item.price, 0));
 }, [items]);
-
-// ✅ 계산으로 파생
-const [items, setItems] = useState([]);
+// PREFER: compute directly
 const total = items.reduce((sum, item) => sum + item.price, 0);
-```
 
-### 숨겨진 사이드 이펙트
-
-```typescript
-// ❌ 이름과 다른 동작
+// AVOID: hidden side effects
 function formatPrice(price: number) {
-  analytics.track('price_viewed'); // ??
+  analytics.track('price_viewed'); // unexpected!
   return `$${price.toFixed(2)}`;
 }
 
-// ✅ 명확한 분리
-function formatPrice(price: number) {
-  return `$${price.toFixed(2)}`;
-}
-
-function trackPriceView() {
-  analytics.track('price_viewed');
-}
-```
-
-### 과도한 추상화
-
-```typescript
-// ❌ 2번 쓰일지도 모르니까 미리 추상화
-function GenericModal<T>({
-  data,
-  renderHeader,
-  renderBody,
-  renderFooter,
-  onClose,
-  ...rest
-}: GenericModalProps<T>) { ... }
-
-// ✅ 구체적으로 시작, 필요할 때 추상화
+// AVOID: premature abstraction
+function GenericModal<T>({ data, renderHeader, renderBody, ... }: GenericModalProps<T>) { ... }
+// PREFER: start concrete, abstract when needed
 function ConfirmDeleteModal({ onConfirm, onCancel }) { ... }
-function EditUserModal({ user, onSave, onCancel }) { ... }
 ```
 
-## 기억할 것
-
-- 코드는 쓰는 것보다 읽히는 횟수가 훨씬 많다
-- 3개월 후의 나는 이 코드를 이해할 수 있을까?
-- "동작하는 코드"보다 "이해되는 코드"
-- 미래의 요구사항을 예측하지 마라. 지금 필요한 것만 작성하라
+|Principle|Description|
+|---|---|
+|Read > Write|Code is read far more often than written|
+|Understand > Work|"Understandable code" beats "working code"|
+|YAGNI|Don't anticipate future requirements, write what's needed now|

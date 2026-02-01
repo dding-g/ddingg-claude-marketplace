@@ -1,27 +1,27 @@
 ---
 name: zod-validation
-description: Zod 스키마 검증 패턴. 폼 검증, API 응답 검증, React Hook Form 통합 시 활성화됩니다.
+description: Zod schema validation patterns. Activated when working with form validation, API response validation, or React Hook Form integration.
 ---
 
 # Zod Validation
 
-> 스키마 검증 - 핵심 패턴만
+> Schema validation - core patterns only
 
-## 기본 사용
+## Basic Usage
 
 ```typescript
 import { z } from 'zod';
 
 const userSchema = z.object({
-  name: z.string().min(1, '이름을 입력하세요'),
-  email: z.string().email('올바른 이메일 형식이 아닙니다'),
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email format'),
   age: z.number().optional(),
 });
 
 type User = z.infer<typeof userSchema>;
 ```
 
-## 폼 검증 (React Hook Form)
+## Form Validation (React Hook Form)
 
 ```typescript
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -48,7 +48,7 @@ function LoginForm() {
 }
 ```
 
-## API 응답 검증
+## API Response Validation
 
 ```typescript
 const apiResponseSchema = z.object({
@@ -56,7 +56,7 @@ const apiResponseSchema = z.object({
   created_at: z.string(),
 });
 
-// safeParse: 예외 대신 결과 객체 반환
+// safeParse: returns result object instead of throwing
 const result = apiResponseSchema.safeParse(response);
 
 if (!result.success) {
@@ -67,9 +67,9 @@ if (!result.success) {
 return result.data;
 ```
 
-## 자주 쓰는 패턴
+## Common Patterns
 
-### 비밀번호 확인
+### Password Confirmation
 
 ```typescript
 const signupSchema = z
@@ -78,12 +78,12 @@ const signupSchema = z
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: '비밀번호가 일치하지 않습니다',
+    message: 'Passwords do not match',
     path: ['confirmPassword'],
   });
 ```
 
-### 조건부 필드
+### Discriminated Union
 
 ```typescript
 const schema = z.discriminatedUnion('type', [
@@ -92,7 +92,7 @@ const schema = z.discriminatedUnion('type', [
 ]);
 ```
 
-### 부분 스키마
+### Partial Schemas
 
 ```typescript
 const userSchema = z.object({
@@ -101,15 +101,12 @@ const userSchema = z.object({
   email: z.string(),
 });
 
-// 생성용 (id 제외)
 const createUserSchema = userSchema.omit({ id: true });
-
-// 수정용 (모두 optional + id 필수)
 const updateUserSchema = userSchema.partial().required({ id: true });
 ```
 
-## 그 외는 필요할 때 찾아보세요
-
-Zod 문서가 잘 되어 있습니다. transform, coerce, preprocess 등은 특수한 경우에만 필요합니다.
-
-**핵심**: 타입과 검증을 한 곳에서 관리하고, `z.infer`로 타입 추론하세요.
+|Principle|Description|
+|---|---|
+|Single source of truth|Type and validation in one place via `z.infer`|
+|safeParse for APIs|Use safeParse at system boundaries|
+|Keep it simple|transform, coerce, preprocess only when truly needed|

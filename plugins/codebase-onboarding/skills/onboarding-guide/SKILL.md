@@ -1,253 +1,135 @@
 ---
 name: onboarding-guide
-description: 새로운 코드베이스 온보딩 가이드. 새 프로젝트 투입 시 체계적인 분석과 이해를 돕습니다.
+description: Codebase onboarding guide. Activated when starting a new project analysis, requesting systematic codebase understanding, or running /onboard.
 ---
 
 # Codebase Onboarding Guide
 
-> 새로운 코드베이스를 체계적으로 이해하는 가이드
+> Systematically understand a new codebase
+
+## 5-Step Onboarding Process
+
+### Step 1: High-Level Overview
+
+|Action|Details|
+|---|---|
+|Identify the problem|What does this project solve?|
+|Know the users|B2B, B2C, internal tool?|
+|Core features|Top 3 features|
+|Tech stack|Check package.json, README|
+
+Key files: `README.md`, `package.json`, company Wiki/Confluence
+
+### Step 2: Get It Running
+
+```bash
+1. Clone repository
+2. Install dependencies (npm install, pip install, etc.)
+3. Set up env vars (.env.example)
+4. Start dev server
+5. Test key features manually
+```
+
+Verify: local run, main features work, tests pass, build succeeds
+
+### Step 3: Code Exploration
+
+```
+Exploration order:
+1. Find entry points
+2. Identify main routes/pages
+3. Locate core business logic
+4. Trace data flow
+```
+
+**Strategy: "Follow one feature end-to-end"**
+
+Example: Login feature
+1. Login button → onClick handler
+2. Handler → API call
+3. API → backend controller
+4. Controller → service logic
+5. Service → database
+6. Response → frontend state update
+
+### Step 4: Understand Patterns
+
+|Pattern to Identify|What to Look For|
+|---|---|
+|Architecture|Layer structure, module boundaries|
+|State management|Redux, Zustand, Context, React Query|
+|API communication|REST, GraphQL, fetch patterns|
+|Error handling|Boundaries, try/catch strategy|
+|Testing|Unit, integration, E2E approach|
+|Naming conventions|Files, components, variables|
+
+Tips: Review recent PRs, find well-written files as benchmarks, use breakpoints for complex logic
+
+### Step 5: Start Contributing
+
+Recommended first tasks:
+1. Good First Issue labeled issues
+2. Documentation improvements
+3. Add tests
+4. Small bug fixes
+5. Minor refactoring
+
+Before contributing: understand branch strategy, PR templates, CI/CD pipeline, code review process
+
+## Analysis Commands
+
+|Command|Description|
+|---|---|
+|`/analyze`|Full codebase structure analysis|
+|`/architecture`|Architecture and design pattern analysis|
+|`/dependencies`|External dependency analysis|
+|`/conventions`|Code convention analysis|
+|`/onboard`|Run full onboarding workflow|
+
+## Onboarding Notes Template
+
+```markdown
+# [Project Name] Onboarding Notes
 
 ## Overview
+- Purpose:
+- Users:
+- Core features:
 
-새로운 팀에 합류하거나 새 프로젝트에 투입되었을 때 코드베이스를 빠르고 체계적으로 이해하기 위한 가이드입니다.
-단계별 접근법과 효과적인 질문 전략을 제공합니다.
+## Tech Stack
+- Frontend:
+- Backend:
+- Database:
+- Infrastructure:
 
-## Activation
+## Architecture
+[Diagram or description]
 
-다음 상황에서 이 스킬이 활성화됩니다:
+## Key Modules
+| Module | Location | Role |
+|--------|----------|------|
 
-- 새로운 프로젝트 분석 시작
-- "이 프로젝트 어떻게 파악해야 해?" 질문 시
-- `/onboard` 커맨드 실행 시
-- 코드베이스 이해 관련 도움 요청 시
+## Domain Terms
+| Term | Meaning |
+|------|---------|
 
-## 온보딩 5단계 프로세스
+## Dev Setup
+[Local run instructions]
 
-### 1단계: 30,000 피트 뷰 (High-Level Overview)
+## Common Commands
+- Dev:
+- Test:
+- Build:
 
-**목표**: 프로젝트의 전체 그림 파악
-
-```
-질문할 것들:
-□ 이 프로젝트가 해결하는 문제는 무엇인가?
-□ 누가 사용자인가? (B2B, B2C, 내부 도구)
-□ 핵심 기능 3가지는 무엇인가?
-□ 어떤 기술 스택을 사용하는가?
-```
-
-**확인 파일:**
-- `README.md`: 프로젝트 개요
-- `package.json` / `requirements.txt`: 기술 스택
-- 회사 Wiki / Confluence: 비즈니스 컨텍스트
-
-### 2단계: 실행해보기 (Get It Running)
-
-**목표**: 로컬에서 프로젝트 실행
-
-```bash
-# 일반적인 순서
-1. 저장소 클론
-2. 의존성 설치 (npm install, pip install 등)
-3. 환경 변수 설정 (.env.example 참고)
-4. 개발 서버 실행
-5. 주요 기능 직접 테스트
+## Notes
+- [Team-specific rules]
+- [Gotchas]
 ```
 
-**체크리스트:**
-- [ ] 로컬 실행 성공
-- [ ] 메인 기능 동작 확인
-- [ ] 테스트 실행 성공
-- [ ] 빌드 성공
+## DO NOT
 
-### 3단계: 코드 탐색 (Code Exploration)
-
-**목표**: 코드 구조와 흐름 이해
-
-```
-탐색 순서:
-1. 엔트리 포인트 찾기
-2. 주요 라우트/페이지 파악
-3. 핵심 비즈니스 로직 위치 확인
-4. 데이터 흐름 추적
-```
-
-**효과적인 탐색 전략:**
-
-```
-"하나의 기능을 끝까지 따라가기"
-
-예: 로그인 기능
-1. 로그인 버튼 → onClick 핸들러
-2. 핸들러 → API 호출
-3. API → 백엔드 컨트롤러
-4. 컨트롤러 → 서비스 로직
-5. 서비스 → 데이터베이스
-6. 응답 → 프론트엔드 상태 업데이트
-```
-
-### 4단계: 패턴 파악 (Understand Patterns)
-
-**목표**: 팀의 코딩 패턴과 컨벤션 이해
-
-```
-파악할 패턴들:
-□ 아키텍처 패턴 (레이어 구조)
-□ 상태 관리 방식
-□ API 통신 방식
-□ 에러 처리 방식
-□ 테스트 작성 방식
-□ 네이밍 컨벤션
-```
-
-**코드 리딩 팁:**
-- 최근 PR 살펴보기 (팀의 코드 리뷰 기준 파악)
-- 잘 작성된 파일 찾아 벤치마크로 삼기
-- 복잡한 로직에는 breakpoint 걸어 디버깅
-
-### 5단계: 기여 시작 (Start Contributing)
-
-**목표**: 작은 태스크부터 시작
-
-```
-추천 시작 태스크:
-1. Good First Issue 태그된 이슈
-2. 문서 개선 / 오타 수정
-3. 테스트 추가
-4. 작은 버그 수정
-5. 코드 리팩토링
-```
-
-**기여 전 확인:**
-- [ ] 브랜치 전략 파악 (git flow, trunk-based 등)
-- [ ] PR 템플릿 확인
-- [ ] CI/CD 파이프라인 이해
-- [ ] 코드 리뷰 프로세스 파악
-
-## 효과적인 질문 전략
-
-### 좋은 질문 만들기
-
-```markdown
-❌ 나쁜 질문
-"이거 어떻게 작동해요?"
-
-✅ 좋은 질문
-"UserService의 authenticate 메서드에서
-JWT 토큰 검증 후 세션에 저장하는 것 같은데,
-Redis 세션 스토어를 사용하는 이유가
-수평 확장 때문인가요?"
-```
-
-### 질문 템플릿
-
-```markdown
-## 질문 제목
-
-### 내가 이해한 것
-[현재까지 파악한 내용]
-
-### 확인하고 싶은 것
-[구체적인 질문]
-
-### 시도해본 것
-[직접 찾아본 내용]
-```
-
-## 코드 분석 명령어
-
-이 플러그인에서 제공하는 분석 명령어:
-
-| 명령어 | 설명 |
-|--------|------|
-| `/analyze` | 전체 코드베이스 구조 분석 |
-| `/architecture` | 아키텍처 및 설계 패턴 분석 |
-| `/dependencies` | 외부 의존성 분석 |
-| `/conventions` | 코드 컨벤션 분석 |
-| `/onboard` | 전체 온보딩 워크플로우 실행 |
-
-## 온보딩 문서 작성 가이드
-
-분석 후 나만의 온보딩 문서를 작성하면 이해도가 높아집니다:
-
-```markdown
-# [프로젝트명] 온보딩 노트
-
-## 프로젝트 개요
-- 목적:
-- 주요 사용자:
-- 핵심 기능:
-
-## 기술 스택
-- 프론트엔드:
-- 백엔드:
-- 데이터베이스:
-- 인프라:
-
-## 아키텍처
-[다이어그램 또는 설명]
-
-## 주요 모듈
-| 모듈 | 위치 | 역할 |
-|------|------|------|
-
-## 핵심 도메인 용어
-| 용어 | 의미 |
-|------|------|
-
-## 개발 환경 설정
-[로컬 실행 방법]
-
-## 자주 사용하는 명령어
-```bash
-# 개발
-# 테스트
-# 빌드
-```
-
-## 알아둘 것들
-- [팀 특유의 규칙]
-- [주의사항]
-
-## 질문/정리
-- [아직 이해 안 된 부분]
-- [나중에 확인할 것]
-```
-
-## Best Practices
-
-1. **문서부터 읽기**: README, Wiki, ADR(Architecture Decision Records)
-2. **작동하는 코드부터**: 이론보다 실행 먼저
-3. **질문을 두려워 말기**: 모르는 건 당연한 것
-4. **메모하기**: 이해한 내용을 기록
-5. **작은 것부터 시작**: 큰 그림은 시간이 지나면 보임
-
-## Anti-Patterns
-
-```
-❌ 피해야 할 것들
-
-1. 모든 코드를 한 번에 이해하려 함
-   → 핵심 흐름부터 파악하기
-
-2. 질문 없이 혼자 끙끙대기
-   → 30분 삽질 후에는 질문하기
-
-3. 문서 없이 코드만 보기
-   → README, 주석, 테스트 코드도 중요한 문서
-
-4. 기존 패턴 무시하고 내 방식 고집
-   → 팀 컨벤션을 먼저 따르기
-
-5. 너무 빨리 리팩토링 제안하기
-   → 최소 2주는 기존 코드 이해에 집중
-```
-
-## 시간별 목표
-
-| 기간 | 목표 |
-|------|------|
-| 1일차 | 로컬 실행 성공, README 숙지 |
-| 1주차 | 주요 기능 코드 흐름 파악, 첫 커밋 |
-| 2주차 | 아키텍처 이해, 작은 태스크 완료 |
-| 1개월 | 독립적으로 중간 규모 태스크 수행 가능 |
-| 3개월 | 시스템 전반 이해, 설계 논의 참여 가능 |
+- Try to understand all code at once (focus on core flows first)
+- Struggle alone for too long (ask after 30 min of being stuck)
+- Ignore documentation (README, comments, test code are important docs)
+- Ignore existing patterns (follow team conventions first)
+- Suggest refactoring too early (spend at least 2 weeks understanding first)

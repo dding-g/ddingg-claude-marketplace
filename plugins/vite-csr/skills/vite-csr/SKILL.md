@@ -1,24 +1,11 @@
 ---
 name: vite-csr
-description: Vite 기반 React SPA 패턴. React Router, 코드 스플리팅, 클라이언트 상태 관리 관련 코드 작성 시 활성화됩니다.
+description: Vite-based React SPA patterns. Activated when working with React Router, code splitting, client-side state management, or Vite configuration.
 ---
 
-# Vite CSR Project Skill
+# Vite CSR Project
 
-> Vite 기반 React SPA/CSR 프로젝트 개발 가이드
-
-## Overview
-
-Vite를 빌드 도구로 사용하는 클라이언트 사이드 렌더링(CSR) React 프로젝트의 패턴과 베스트 프랙티스를 제공합니다.
-
-## Activation
-
-다음 상황에서 이 스킬이 활성화됩니다:
-
-- Vite, CSR, SPA 언급
-- React Router 라우팅 관련
-- 클라이언트 사이드 상태 관리
-- 번들 최적화, 코드 스플리팅 관련
+> Vite-based React SPA/CSR project patterns
 
 ## Project Structure (FSD)
 
@@ -26,17 +13,17 @@ Vite를 빌드 도구로 사용하는 클라이언트 사이드 렌더링(CSR) R
 src/
 ├── app/                      # App Layer
 │   ├── providers/            # Context Providers
-│   ├── router/               # React Router 설정
-│   ├── styles/               # 글로벌 스타일
+│   ├── router/               # React Router config
+│   ├── styles/               # Global styles
 │   └── index.tsx             # App Entry
 ├── pages/                    # Pages Layer
 │   ├── home/
 │   ├── dashboard/
 │   └── settings/
-├── widgets/                  # Widgets Layer
-├── features/                 # Features Layer
-├── entities/                 # Entities Layer
-├── shared/                   # Shared Layer
+├── widgets/
+├── features/
+├── entities/
+├── shared/
 │   ├── api/
 │   ├── config/
 │   ├── lib/
@@ -47,7 +34,7 @@ src/
 
 ## Core Patterns
 
-### 1. App Providers Setup
+### 1. App Providers
 
 ```typescript
 // app/providers/index.tsx
@@ -83,14 +70,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
 }
 ```
 
-### 2. React Router Setup
+### 2. React Router
 
 ```typescript
 // app/router/index.tsx
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 
-// Lazy Loading
 const HomePage = lazy(() => import('@/pages/home'));
 const DashboardPage = lazy(() => import('@/pages/dashboard'));
 const SettingsPage = lazy(() => import('@/pages/settings'));
@@ -117,14 +103,6 @@ const router = createBrowserRouter([
           </Suspense>
         ),
       },
-      {
-        path: 'settings',
-        element: (
-          <Suspense fallback={<PageSkeleton />}>
-            <SettingsPage />
-          </Suspense>
-        ),
-      },
     ],
   },
 ]);
@@ -145,37 +123,16 @@ export function ProtectedRoute() {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
+  if (isLoading) return <LoadingSpinner />;
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return <Outlet />;
 }
-
-// Router에서 사용
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <RootLayout />,
-    children: [
-      { index: true, element: <HomePage /> },
-      {
-        element: <ProtectedRoute />,
-        children: [
-          { path: 'dashboard', element: <DashboardPage /> },
-          { path: 'settings', element: <SettingsPage /> },
-        ],
-      },
-    ],
-  },
-]);
 ```
 
-### 4. Page Component Pattern
+### 4. Page Component
 
 ```typescript
 // pages/dashboard/index.tsx
@@ -190,7 +147,6 @@ export default function DashboardPage() {
         <title>Dashboard | MyApp</title>
         <meta name="description" content="View your dashboard" />
       </Helmet>
-
       <main className="dashboard-page">
         <h1>Dashboard</h1>
         <DashboardStats />
@@ -201,7 +157,7 @@ export default function DashboardPage() {
 }
 ```
 
-### 5. API Client Setup
+### 5. API Client
 
 ```typescript
 // shared/api/client.ts
@@ -210,12 +166,9 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  headers: { 'Content-Type': 'application/json' },
 });
 
-// Request Interceptor
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('accessToken');
@@ -227,12 +180,10 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response Interceptor
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     if (error.response?.status === 401) {
-      // 토큰 갱신 또는 로그아웃 처리
       localStorage.removeItem('accessToken');
       window.location.href = '/login';
     }
@@ -269,7 +220,7 @@ export const env = {
 } as const;
 ```
 
-### 7. Authentication Pattern
+### 7. Authentication (Zustand)
 
 ```typescript
 // features/auth/model/store.ts
@@ -290,14 +241,8 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       accessToken: null,
       isAuthenticated: false,
-
-      login: (user, accessToken) => {
-        set({ user, accessToken, isAuthenticated: true });
-      },
-
-      logout: () => {
-        set({ user: null, accessToken: null, isAuthenticated: false });
-      },
+      login: (user, accessToken) => set({ user, accessToken, isAuthenticated: true }),
+      logout: () => set({ user: null, accessToken: null, isAuthenticated: false }),
     }),
     {
       name: 'auth-storage',
@@ -311,7 +256,7 @@ export const useAuthStore = create<AuthState>()(
 );
 ```
 
-### 8. SEO with React Helmet
+### 8. SEO (React Helmet)
 
 ```typescript
 // shared/ui/seo/index.tsx
@@ -332,18 +277,10 @@ export function SEO({ title, description, image, url }: SEOProps) {
     <Helmet>
       <title>{fullTitle}</title>
       {description && <meta name="description" content={description} />}
-
-      {/* Open Graph */}
       <meta property="og:title" content={fullTitle} />
       {description && <meta property="og:description" content={description} />}
       {image && <meta property="og:image" content={image} />}
       {url && <meta property="og:url" content={url} />}
-
-      {/* Twitter */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={fullTitle} />
-      {description && <meta name="twitter:description" content={description} />}
-      {image && <meta name="twitter:image" content={image} />}
     </Helmet>
   );
 }
@@ -359,23 +296,15 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
+    alias: { '@': path.resolve(__dirname, './src') },
   },
-
   server: {
     port: 3000,
     proxy: {
-      '/api': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-      },
+      '/api': { target: 'http://localhost:8080', changeOrigin: true },
     },
   },
-
   build: {
     rollupOptions: {
       output: {
@@ -391,61 +320,52 @@ export default defineConfig({
 });
 ```
 
-## Performance Optimization
-
-### Code Splitting
+## Code Splitting
 
 ```typescript
-// 라우트 레벨 코드 스플리팅
+// Route-level
 const Dashboard = lazy(() => import('@/pages/dashboard'));
 
-// 컴포넌트 레벨 코드 스플리팅
+// Component-level
 const HeavyChart = lazy(() => import('@/widgets/heavy-chart'));
 
-// 조건부 로딩
+// Named export
 const AdminPanel = lazy(() =>
   import('@/widgets/admin-panel').then((module) => ({
     default: module.AdminPanel,
   }))
 );
-```
 
-### Prefetching
-
-```typescript
-// 마우스 호버 시 프리페치
-const prefetchDashboard = () => {
-  import('@/pages/dashboard');
-};
-
-<Link to="/dashboard" onMouseEnter={prefetchDashboard}>
-  Dashboard
-</Link>
+// Prefetch on hover
+const prefetchDashboard = () => { import('@/pages/dashboard'); };
+<Link to="/dashboard" onMouseEnter={prefetchDashboard}>Dashboard</Link>
 ```
 
 ## Best Practices
 
-1. **Lazy Loading**: 페이지 컴포넌트는 항상 lazy import
-2. **Error Boundaries**: 라우트별 에러 처리
-3. **Code Splitting**: manualChunks로 벤더 번들 분리
-4. **환경 변수**: VITE_ 접두사로 클라이언트 환경 변수 관리
-5. **SEO**: react-helmet-async로 메타 태그 관리
-6. **타입 안전성**: vite-env.d.ts로 환경 변수 타입 정의
+|Practice|Description|
+|---|---|
+|Lazy Loading|Always lazy import page components|
+|Error Boundaries|Per-route error handling|
+|Code Splitting|manualChunks for vendor bundle separation|
+|Env vars|VITE_ prefix for client env vars|
+|SEO|react-helmet-async for meta tags|
+|Type safety|vite-env.d.ts for env var types|
 
-## Anti-Patterns
+## DO NOT
 
 ```typescript
-// ❌ 동기 import로 번들 크기 증가
+// AVOID: synchronous import (increases bundle size)
 import Dashboard from '@/pages/dashboard';
 
-// ❌ 환경 변수 직접 접근
-const apiUrl = process.env.REACT_APP_API_URL; // Vite에서 동작 안 함
+// AVOID: wrong env var access
+const apiUrl = process.env.REACT_APP_API_URL; // doesn't work in Vite
 
-// ❌ 인증 상태를 props로 전달
-<App isAuthenticated={isAuth} user={user} /> // Props Drilling
+// AVOID: auth state via props drilling
+<App isAuthenticated={isAuth} user={user} />
 
-// ❌ SEO 미적용
+// AVOID: missing SEO
 export default function Page() {
-  return <div>Content</div>; // 제목, 설명 없음
+  return <div>Content</div>; // no title, no description
 }
 ```
