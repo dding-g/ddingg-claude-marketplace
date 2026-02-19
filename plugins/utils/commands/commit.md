@@ -26,4 +26,3 @@ description: Git commit with conventional commit message. 변경사항을 분석
    - **--task 옵션이 없을 때**: `<type>: <subject>`
 5. 커밋 메시지는 한글로 작성
 6. 커밋 실행
-7. `git push origin HEAD`로 commit 한 브랜치 push. 단 develop이나 main 브랜치인 경우는 push 금지.
